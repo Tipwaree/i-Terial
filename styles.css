@@ -1,0 +1,318 @@
+body {
+    background-color: antiquewhite;
+    margin: 0; /* เอาขอบ default ของ browser ออก */
+    font-family: "Kodchasan", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+
+}
+
+.bigcontainer {
+    background-color: tomato;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;   /* คุมความสูงแทน */
+}
+
+h1 {
+    color: antiquewhite;
+    font-size: 40px;
+    margin: 0;   /* เอา margin default ของ h1 ออก */
+}
+
+.buttongroup {
+    display: flex;
+    gap: 15px;
+}
+
+button {
+    padding:10px 30px ;
+    border: none;
+    border-radius: 10px;
+    background-color: rgba(32, 161, 25, 0.705);
+    color: antiquewhite;
+    font-size: 20px;
+
+}
+
+button:hover{
+    opacity: 0.95;
+    background-color: #1e7f1a;
+}
+
+.smallcontainer h1{
+    color: rgba(32, 161, 25, 0.705);
+    font-size: 150px;
+    margin: 0; 
+}
+
+.smallcontainer h2{
+    color: rgba(32, 161, 25, 0.705);
+    font-size: 50px;
+    margin: 0; 
+}
+
+.smallcontainer{
+    display: flex;
+    flex-direction: column;
+    margin-top: 15%;
+    padding-left: 10% ;
+}
+
+.logbutton{
+    display: flex;
+    gap: 50px;
+}
+
+
+
+
+
+
+/* หน้า Loginpage  หน้า registerpage*/
+.loginform{
+    background-color: rgba(32, 161, 25, 0.705);
+    width: 400px;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    min-height: 200px;
+}
+
+.loginform h1 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.loginform p {
+    color: antiquewhite;
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.loginform input{
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+.submitbutton{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.submitbutton button{
+    border-radius: 10px;
+    color: rgba(32, 161, 25, 0.705);
+    font-size: 20px;
+    background-color: antiquewhite;
+    padding: 10px 30px;
+    border: none;
+    cursor: pointer;
+}
+
+.biggest {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: linear-gradient(135deg, #1e7f1a, #48c774);
+}
+
+
+
+
+
+/* หน้า profilepage */
+/* หน้า profilepage */
+
+.profilecontainer{
+    width: 900px;
+    margin: 60px auto;
+    padding: 50px;
+    background-color: rgba(32, 161, 25, 0.75);
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
+/* กล่องคำว่า Profile */
+
+.profilelogo{
+    display: inline-block;
+    background-color: antiquewhite;
+    border-radius: 40px;
+    padding: 10px 35px;
+    margin-bottom: 40px;
+}
+
+.profilelogo h1{
+    margin: 0;
+    color: rgba(32,161,25,0.8);
+    font-size: 28px;
+}
+
+/* layout ซ้ายขวา */
+
+.profilecontent{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+}
+
+/* ฝั่งข้อมูล */
+
+.left-information{
+    flex: 1;
+}
+
+/* grid field */
+
+.left{
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    row-gap: 25px;
+    column-gap: 15px;
+}
+
+/* ชื่อ field */
+
+.left p{
+    font-size: 22px;
+    margin: 0;
+    color: antiquewhite;
+    display: flex;
+    align-items: center;
+}
+
+/* กล่องข้อมูล */
+
+.left label{
+    background-color: antiquewhite;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    color: #222;
+    display: flex;
+    align-items: center;
+}
+
+/* รูป */
+
+.right-information{
+    width: 260px;
+    display: flex;
+    justify-content: center;
+}
+
+.image img{
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid white;
+}
+
+/* ปุ่ม */
+
+.profilebuttons{
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ปุ่ม */
+
+.profilebuttons button{
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+/* edit */
+
+.editbtn{
+    background-color: #1e7f1a;
+    color: white;
+}
+
+/* logout */
+
+.logoutbtn{
+    background-color: #c0392b;
+    color: white;
+}
+
+.profilebuttons button:hover{
+    opacity: 0.9;
+}
+
+
+
+
+
+
+/* editprofilepage */
+.formedit{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-top:80px;
+}
+
+/* กล่องฟอร์ม */
+
+.formedit form{
+    background: linear-gradient(135deg,#f5e6d3,#ffe8c2);
+    padding:40px;
+    border-radius:20px;
+    width:350px;
+    box-shadow:0px 5px 15px rgba(0,0,0,0.15);
+}
+
+/* ข้อความหัวข้อ */
+
+.formedit p{
+    margin-bottom:5px;
+    margin-top:15px;
+    font-weight:600;
+}
+
+.formedit h1 {
+    color: tomato;
+}
+
+/* ช่อง input */
+
+.formedit input{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    margin-bottom:10px;
+    font-size:14px;
+}
+
+/* ปุ่ม save */
+
+.save{
+    margin-top:20px;
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background-color:rgba(32, 161, 25, 0.8);
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.save:hover{
+    background-color:rgba(32, 161, 25, 1);
+}
