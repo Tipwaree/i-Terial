@@ -35,10 +35,14 @@
             <!-- Sidebar -->
             <div class="sidebar">
                 <div class="course-card">
-                    <img src="<%= course.image %>" alt="<%= course.title %>">
                     <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
                     <%= course.title %>
                 </div>
+                <% if (user && (user.role==='admin' || user.role==='teacher' )) { %>
+                    <hr>
+                    <a href="/teacher/edit-course/<%= course.id %>"><button>แก้ไขคอร์ส</button></a>
+                    <a href="/teacher/manage-lessons/<%= course.id %>"><button>เพิ่ม/ลบบทเรียน</button></a>
+                    <% } %>
             </div>
             <div style="margin: 20px 0;">
                 <button>bookmark</button>

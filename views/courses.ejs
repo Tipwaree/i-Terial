@@ -34,7 +34,6 @@
             <% courses.forEach(course=> { %>
                 <a href="/courses/<%= course.slug %>" style="text-decoration:none;">
                     <div class="course-card">
-                        <img src="<%= course.image %>" alt="<%= course.title %>">
                         <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
                         <div class="course-title">
                             <%= course.title %>
