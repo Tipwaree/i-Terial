@@ -531,9 +531,9 @@ a.nav-btn:hover {
 .teacher-menu {
     margin: 20px 0;
     padding: 20px;
-    background-color: #e3f2fd;
+    background-color: #f0f0f0;
     border-radius: 8px;
-    border-left: 5px solid #2196F3;
+    border-left: 5px solid #4CAF50;
 }
 
 .teacher-menu-title {
@@ -552,12 +552,12 @@ a.nav-btn:hover {
 }
 
 .btn-edit-course {
-    background-color: #2196F3;
+    background-color: #4CAF50;
     margin-right: 10px;
 }
 
 .btn-edit-course:hover {
-    background-color: #1976D2;
+    background-color: #4CAF50;
 }
 
 .btn-manage-lessons {
