@@ -394,7 +394,7 @@ a.nav-btn:hover {
 
 .bookmark-btn{
     border:none;
-    background:white;
+    background:rgb(21, 137, 65);
     font-size:20px;
     cursor:pointer;
     border-radius:50%;
@@ -479,7 +479,7 @@ a.nav-btn:hover {
     margin-bottom: 10px;
     cursor: pointer;
     border: 1px solid #ccc;
-    background: white;
+    background: rgb(21, 127, 72);
     border-radius: 5px;
 }
 
