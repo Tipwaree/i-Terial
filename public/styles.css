@@ -1,47 +1,83 @@
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     background-color: antiquewhite;
     margin: 0;
-    /* เอาขอบ default ของ browser ออก */
     font-family: "Kodchasan", sans-serif;
     font-weight: 300;
     font-style: normal;
-
 }
 
-.bigcontainer {
+a {
+    text-decoration: none;
+}
+
+/* ===== NAVBAR ===== */
+/* รองรับทั้ง .bigcontainer และ header */
+.bigcontainer,
+header {
     background-color: tomato;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 40px;
-    /* คุมความสูงแทน */
 }
 
-h1 {
+/* Logo — รองรับทั้ง h1 ใน .bigcontainer และ <a class="logo"> */
+.bigcontainer h1,
+.bigcontainer .logo h1,
+header .logo,
+a.logo {
     color: antiquewhite;
     font-size: 40px;
     margin: 0;
-    /* เอา margin default ของ h1 ออก */
+    text-decoration: none;
 }
 
-.buttongroup {
+/* Button group ใน navbar */
+.buttongroup,
+nav {
     display: flex;
     gap: 15px;
+    align-items: center;
 }
 
-button {
+/* ===== BUTTONS ===== */
+/* รองรับทั้ง button ธรรมดา, .highbut และ .nav-btn */
+button,
+.highbut,
+.nav-btn,
+a.nav-btn {
     padding: 10px 30px;
     border: none;
     border-radius: 10px;
     background-color: rgba(32, 161, 25, 0.705);
     color: antiquewhite;
     font-size: 20px;
-
+    cursor: pointer;
+    font-family: "Kodchasan", sans-serif;
+    font-weight: 300;
+    text-decoration: none;
+    display: inline-block;
 }
 
-button:hover {
+button:hover,
+.highbut:hover,
+.nav-btn:hover,
+a.nav-btn:hover {
     opacity: 0.95;
     background-color: #1e7f1a;
+}
+
+/* ===== HOME PAGE ===== */
+.smallcontainer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15%;
+    padding-left: 10%;
 }
 
 .smallcontainer h1 {
@@ -56,24 +92,20 @@ button:hover {
     margin: 0;
 }
 
-.smallcontainer {
-    display: flex;
-    flex-direction: column;
-    margin-top: 15%;
-    padding-left: 10%;
-}
-
 .logbutton {
     display: flex;
     gap: 50px;
+    margin-top: 30px;
 }
 
+/* ===== LOGIN / REGISTER PAGE ===== */
+.biggest {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-
-
-
-
-/* หน้า Loginpage  หน้า registerpage*/
 .loginform {
     background-color: rgba(32, 161, 25, 0.705);
     width: 400px;
@@ -86,6 +118,8 @@ button:hover {
 .loginform h1 {
     text-align: center;
     margin-bottom: 15px;
+    color: antiquewhite;
+    font-size: 40px;
 }
 
 .loginform p {
@@ -101,6 +135,7 @@ button:hover {
     border: none;
     margin-bottom: 15px;
     outline: none;
+    font-family: "Kodchasan", sans-serif;
 }
 
 .submitbutton {
@@ -119,21 +154,12 @@ button:hover {
     cursor: pointer;
 }
 
-.biggest {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: linear-gradient(135deg, #1e7f1a, #48c774);
+.submitbutton button:hover {
+    background-color: #f0e0c8;
+    opacity: 1;
 }
 
-
-
-
-
-/* หน้า profilepage */
-/* หน้า profilepage */
-
+/* ===== PROFILE PAGE ===== */
 .profilecontainer {
     width: 900px;
     margin: 60px auto;
@@ -142,8 +168,6 @@ button:hover {
     border-radius: 20px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
-
-/* กล่องคำว่า Profile */
 
 .profilelogo {
     display: inline-block;
@@ -159,8 +183,6 @@ button:hover {
     font-size: 28px;
 }
 
-/* layout ซ้ายขวา */
-
 .profilecontent {
     display: flex;
     justify-content: space-between;
@@ -168,13 +190,9 @@ button:hover {
     gap: 40px;
 }
 
-/* ฝั่งข้อมูล */
-
 .left-information {
     flex: 1;
 }
-
-/* grid field */
 
 .left {
     display: grid;
@@ -183,8 +201,6 @@ button:hover {
     column-gap: 15px;
 }
 
-/* ชื่อ field */
-
 .left p {
     font-size: 22px;
     margin: 0;
@@ -192,8 +208,6 @@ button:hover {
     display: flex;
     align-items: center;
 }
-
-/* กล่องข้อมูล */
 
 .left label {
     background-color: antiquewhite;
@@ -204,8 +218,6 @@ button:hover {
     display: flex;
     align-items: center;
 }
-
-/* รูป */
 
 .right-information {
     width: 260px;
@@ -221,15 +233,11 @@ button:hover {
     border: 5px solid white;
 }
 
-/* ปุ่ม */
-
 .profilebuttons {
     margin-top: 50px;
     display: flex;
     justify-content: space-between;
 }
-
-/* ปุ่ม */
 
 .profilebuttons button {
     padding: 12px 35px;
@@ -237,14 +245,10 @@ button:hover {
     font-size: 18px;
 }
 
-/* edit */
-
 .editbtn {
     background-color: #1e7f1a;
     color: white;
 }
-
-/* logout */
 
 .logoutbtn {
     background-color: #c0392b;
@@ -255,20 +259,13 @@ button:hover {
     opacity: 0.9;
 }
 
-
-
-
-
-
-/* editprofilepage */
+/* ===== EDIT PROFILE PAGE ===== */
 .formedit {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 80px;
 }
-
-/* กล่องฟอร์ม */
 
 .formedit form {
     background: linear-gradient(135deg, #f5e6d3, #ffe8c2);
@@ -278,8 +275,6 @@ button:hover {
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* ข้อความหัวข้อ */
-
 .formedit p {
     margin-bottom: 5px;
     margin-top: 15px;
@@ -288,9 +283,8 @@ button:hover {
 
 .formedit h1 {
     color: tomato;
+    font-size: 40px;
 }
-
-/* ช่อง input */
 
 .formedit input {
     width: 100%;
@@ -299,9 +293,8 @@ button:hover {
     border: 1px solid #ccc;
     margin-bottom: 10px;
     font-size: 14px;
+    font-family: "Kodchasan", sans-serif;
 }
-
-/* ปุ่ม save */
 
 .save {
     margin-top: 20px;
@@ -314,38 +307,46 @@ button:hover {
     font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
+    font-family: "Kodchasan", sans-serif;
 }
 
 .save:hover {
     background-color: rgba(32, 161, 25, 1);
+    opacity: 1;
 }
 
+/* ===== COURSES PAGE ===== */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px;
 }
 
-/* Course Grid */
+.container h1 {
+    color: #4a4a4a;
+    font-size: 40px;
+    margin: 0 0 20px 0;
+}
+
 .course-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 30px;
-
-    /* เพิ่ม 3 บรรทัดนี้เข้าไปเพื่อคุมขนาดครับ */
     max-width: 1200px;
-    /* ไม่ให้กว้างเกิน 1200px */
     margin: 40px auto;
-    /* ดันให้อยู่กึ่งกลางจอภาพ */
     padding: 0 20px;
-    /* เผื่อขอบซ้ายขวานิดหน่อยเวลาดูในมือถือ */
 }
 
 .course-card {
     background-color: #9DB05A;
-    /* Olive green base */
     border-radius: 4px;
     overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .course-card img {
@@ -359,7 +360,7 @@ button:hover {
     font-size: 20px;
 }
 
-/* Details Page */
+/* ===== DETAIL PAGE ===== */
 .detail-layout {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -369,6 +370,11 @@ button:hover {
 .sidebar-info {
     color: #4a4a4a;
     line-height: 1.8;
+    font-size: 16px;
+}
+
+.sidebar-info p {
+    margin: 8px 0;
 }
 
 .content-box {
@@ -379,14 +385,27 @@ button:hover {
     margin-bottom: 30px;
 }
 
+.content-box h2 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+}
+
 .part-section {
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #ccc;
     margin-bottom: 20px;
     padding-bottom: 20px;
+}
+
+.part-section h3 {
+    font-size: 22px;
+    margin: 0 0 10px 0;
+    color: #333;
 }
 
 .item-row {
     display: flex;
     justify-content: space-between;
     margin: 10px 0;
+    font-size: 16px;
+    color: #444;
 }
