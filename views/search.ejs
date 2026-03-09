@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>IT-Rial</title>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="logo">i-Terial</div>
+
+        <div class="menu">
+            <a href="/">Home</a>
+            <a href="/search">Search</a>
+            <a href="#">Profile</a>
+            <a href="#">Exam</a>
+            <a href="#">Review</a>
+        </div>
+
+    </div>
+
+    <!-- SEARCH BOX -->
+
+    <div class="search-box">
+
+        <form action="/search" method="GET">
+
+            <input type="text" name="keyword" placeholder="กรุณากรอกชื่อรายวิชา" value="<%= keyword %>" class="search-input">
+
+            <button class="search-btn">🔍</button>
+
+        </form>
+
+    </div>
+
+    <!-- RESULT -->
+
+    <div class="result">
+
+        <% if(courses===null){ %>
+
+            <!-- ยังไม่ได้ค้นหา -->
+
+            <% } else if(courses.length===0){ %>
+
+                <div class="notfound">
+                    ไม่พบวิชาที่ค้นหา
+                </div>
+
+                <% } else { %>
+
+                    <div class="course-list">
+
+                        <% courses.forEach(course=> { %>
+
+                            <a href="/course/<%= encodeURIComponent(course.course_name) %>" class="course-link">
+
+                                <div class="course-card">
+
+                                    <img src="/images/<%= course.image %>">
+
+                                    <p>
+                                        <%= course.course_name %>
+                                    </p>
+
+                                </div>
+
+                            </a>
+
+                            <% }) %>
+
+                    </div>
+
+                    <% } %>
+
+    </div>
+
+</body>
+
+</html>
