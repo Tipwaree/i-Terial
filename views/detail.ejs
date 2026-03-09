@@ -36,68 +36,68 @@
             <div class="sidebar">
                 <div class="course-card">
                     <img src="<%= course.image %>" alt="<%= course.title %>">
-                    <div class="course-title">
-                        <%= course.title %>
-                    </div>
-                </div>
-                <div style="margin: 20px 0;">
-                    <button>bookmark</button>
-                    <button>enroll</button>
-                </div>
-                <div class="sidebar-info">
-                    <p>ผู้สอน : <%= course.teacher %>
-                    </p>
-                    <p>จำนวนผู้เรียน : <%= course.students %>
-                    </p>
-                    <p>คะแนน : <%= course.rating %>
-                    </p>
-                    <p>รีวิว : <%= course.reviewText %>
-                    </p>
-                    <p>บันทึกการเรียน : <%= course.progress %>%</p>
+                    <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
+                    <%= course.title %>
                 </div>
             </div>
-
-            <!-- Main Content -->
-            <div class="main-content">
-                <div class="content-box">
-                    <h2>
-                        <%= course.title %>
-                    </h2>
-                    <p>
-                        <%= course.description %>
-                    </p>
-                </div>
-
-                <div class="part-section">
-                    <h3>part 1</h3>
-                    <% course.part1.forEach(item=> { %>
-                        <div class="item-row">
-                            <span>
-                                <%= item.label %>
-                            </span>
-                            <span>
-                                <%= item.count %> ข้อ
-                            </span>
-                        </div>
-                        <% }); %>
-                </div>
-
-                <div class="part-section" style="border:none;">
-                    <h3>part 2</h3>
-                    <% course.part2.forEach(item=> { %>
-                        <div class="item-row">
-                            <span>
-                                <%= item.label %>
-                            </span>
-                            <span>
-                                <%= item.count %> ข้อ
-                            </span>
-                        </div>
-                        <% }); %>
-                </div>
+            <div style="margin: 20px 0;">
+                <button>bookmark</button>
+                <button>enroll</button>
             </div>
-
+            <div class="sidebar-info">
+                <p>ผู้สอน : <%= course.teacher %>
+                </p>
+                <p>จำนวนผู้เรียน : <%= course.students %>
+                </p>
+                <p>คะแนน : <%= course.rating %>
+                </p>
+                <p>รีวิว : <%= course.reviewText %>
+                </p>
+                <p>บันทึกการเรียน : <%= course.progress %>%</p>
+            </div>
         </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-box">
+                <h2>
+                    <%= course.title %>
+                </h2>
+                <p>
+                    <%= course.description %>
+                </p>
+            </div>
+
+            <div class="part-section">
+                <h3>part 1</h3>
+                <% course.part1.forEach(item=> { %>
+                    <div class="item-row">
+                        <span>
+                            <%= item.label %>
+                        </span>
+                        <span>
+                            <%= item.count %> ข้อ
+                        </span>
+                    </div>
+                    <% }); %>
+            </div>
+
+            <div class="part-section" style="border:none;">
+                <h3>part 2</h3>
+                <% course.part2.forEach(item=> { %>
+                    <div class="item-row">
+                        <span>
+                            <%= item.label %>
+                        </span>
+                        <span>
+                            <%= item.count %> ข้อ
+                        </span>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+
+    </div>
     </div>
 
 </body>
