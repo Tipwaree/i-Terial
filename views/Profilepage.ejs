@@ -92,32 +92,19 @@
     </div>
 
     <div class="bookmark">
-        <h1>Bookmark</h1>
-        <div class="container">
-            <h1>Course</h1>
-            <div class="course-grid">
-                <div class="course-grid">
+        <h2>My Bookmarks</h2>
 
-                    <% if (courses && courses.length> 0) { %>
+        <div class="course-grid">
+            <% bookmarks.forEach(course=> { %>
 
-                        <% courses.forEach(course=> { %>
-
-                            <a href="/courses/<%= course.slug %>" style="text-decoration:none;">
-
-                                <div class="course-card bookmarked">
-                                    <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
-                                    <div class="course-title">
-                                        <%= course.title %>
-                                    </div>
-                                    <div class="bookmark-star">⭐</div>
-                                </div>
-                            </a>
-                            <% }) %>
-                                <% } else { %>
-                                    <p>No bookmarks yet</p>
-                                    <% } %>
+                <div class="course-card">
+                    <img src="/uploads/<%= course.image %>">
+                    <div class="course-title">
+                        <%= course.title %>
+                    </div>
                 </div>
-            </div>
+
+                <% }) %>
         </div>
     </div>
 </body>

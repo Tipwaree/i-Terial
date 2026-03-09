@@ -44,6 +44,18 @@ CREATE TABLE IF NOT EXISTS users (
 )
 `);
 
+db.all(`
+SELECT courses.*
+FROM bookmarks
+JOIN courses ON bookmarks.course_id = courses.id
+WHERE bookmarks.user_id = ?
+`, [req.session.user.id], (err, bookmarks)=>{
+    
+    res.render("Profilepage", {
+        user:req.session.user,
+        bookmarks:bookmarks
+    })
+})
 
 // สร้าง admin
 db.get("SELECT * FROM users WHERE username=?", ["admin"], (err, row) => {
@@ -60,6 +72,15 @@ db.get("SELECT * FROM users WHERE username=?", ["teacher"], (err, row) => {
     db.run(`INSERT INTO users (username,password,email,role) VALUES (?,?,?,?)`,
       ["teacher", "123", "teacher@mail.com", "teacher"]);
     console.log("Teacher account created");
+  }
+});
+
+// สร้าง student
+db.get("SELECT * FROM users WHERE username=?", ["student"], (err, row) => {
+  if (!row) {
+    db.run(`INSERT INTO users (username,password,email,role) VALUES (?,?,?,?)`,
+      ["student", "123", "student@mail.com", "student"]);
+    console.log("Student account created");
   }
 });
 
@@ -158,19 +179,27 @@ app.post("/bookmark/:id", (req, res) => {
     [userId, courseId],
     (err, row) => {
       if (row) {
-        return res.redirect("/courses");
+        // ถ้ามีอยู่แล้ว → ลบ bookmark
+        coursesDb.run(
+          "DELETE FROM bookmarks WHERE user_id=? AND course_id=?",
+          [userId, courseId],
+          () => {
+            res.redirect("/courses");
+          }
+        );
+      } else {
+        // ถ้ายังไม่มี → เพิ่ม bookmark
+        coursesDb.run(
+          "INSERT INTO bookmarks (user_id, course_id) VALUES (?,?)",
+          [userId, courseId],
+          () => {
+            res.redirect("/courses");
+          }
+        );
       }
-      coursesDb.run(
-        "INSERT INTO bookmarks (user_id, course_id) VALUES (?,?)",
-        [userId, courseId],
-        () => {
-          res.redirect("/courses");
-        }
-      );
     }
   );
 });
-
 
 
 // Edit profile
@@ -367,6 +396,33 @@ app.post("/teacher/create-course", upload.single("image"), (req, res) => {
       res.send("<script>alert('สร้างคอร์สสำเร็จ!'); window.location.href='/courses';</script>");
     }
   );
+});
+
+// Course detail (หน้าดูรายละเอียดคอร์ส และแสดงบทเรียน)
+app.get("/courses/:slug", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  
+  // 1. ดึงข้อมูลคอร์ส
+  coursesDb.get("SELECT * FROM courses WHERE slug=?", [req.params.slug], (err, course) => {
+    if (!course) return res.status(404).send("Course not found");
+    
+    // ข้อมูลจำลอง (Mock) สำหรับ Sidebar
+    course.teacher = "คุณครูผู้สอน";
+    course.students = 0;
+    course.rating = 5.0;
+    course.reviewText = "ยังไม่มีรีวิว";
+    course.progress = 0;
+
+    // 2. ดึงข้อมูลบทเรียน (Lessons) ทั้งหมดที่อยู่ในคอร์สนี้
+    coursesDb.all("SELECT * FROM lessons WHERE course_id=?", [course.id], (err, lessons) => {
+      // ส่งตัวแปร course และ lessons ไปให้หน้า detail.ejs
+      res.render("detail", { 
+        course: course, 
+        lessons: lessons || [], 
+        user: req.session.user 
+      });
+    });
+  });
 });
 
 // ─── START SERVER ─────────────────────────────────────────

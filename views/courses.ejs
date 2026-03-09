@@ -32,18 +32,20 @@
         <h1>Course</h1>
         <div class="course-grid">
             <% courses.forEach(course=> { %>
-                <a href="/courses/<%= course.slug %>" style="text-decoration:none;">
-                    <div class="course-card">
-                        <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
-                        <div class="course-title">
-                            <%= course.title %>
-                        </div>
+                <div class="course-card">
+                    <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
+                    <div class="course-title">
+                        <%= course.title %>
                     </div>
-                </a>
+                    <% if(user.role==="student" ){ %>
+                        <form action="/bookmark/<%= course.id %>" method="POST">
+                            <button class="bookmark-btn">⭐</button>
+                        </form>
+                        <% } %>
+                </div>
                 <% }); %>
         </div>
     </div>
-
 </body>
 
 </html>
