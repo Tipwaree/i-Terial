@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <title>i-Terial Courses</title>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">i-Terial</a>
+        <nav>
+            <a href="#" class="nav-btn">Home</a>
+            <a href="#" class="nav-btn">Search</a>
+            <a href="#" class="nav-btn">Profile</a>
+            <a href="#" class="nav-btn">User</a>
+            <a href="#" class="nav-btn">Review</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Course</h1>
+        <div class="course-grid">
+            <% courses.forEach(course => { %>
+                <div class="course-card">
+                    <img src="<%= course.image %>" alt="Course Image">
+                    <div class="course-title"><%= course.title %></div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>

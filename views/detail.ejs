@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">i-Terial</a>
+        <nav>
+            <a href="#" class="nav-btn">Home</a>
+            <a href="#" class="nav-btn">Search</a>
+            <a href="#" class="nav-btn">Profile</a>
+            <a href="#" class="nav-btn">Exam</a>
+            <a href="#" class="nav-btn">Review</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="detail-layout">
+            <div class="sidebar">
+                <div class="course-card">
+                    <img src="/" alt="TPAT3">
+                    <div class="course-title">TPAT3</div>
+                </div>
+                <div style="margin: 20px 0;">
+                    <button class="nav-btn">bookmark</button>
+                    <button class="nav-btn">enroll</button>
+                </div>
+                <div class="sidebar-info">
+                    <p>ผู้สอน : <%= course.teacher %></p>
+                    <p>จำนวนผู้เรียน : <%= course.students %></p>
+                    <p>คะแนน : <%= course.rating %></p>
+                    <p>รีวิว : <%= course.reviewText %></p>
+                    <p>บันทึกการเรียน : <%= course.progress %>%</p>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="content-box">
+                    <h2><%= course.title %></h2>
+                    <p><%= course.description %></p>
+                </div>
+
+                <div class="part-section">
+                    <h3>part 1</h3>
+                    <% course.part1.forEach(item => { %>
+                        <div class="item-row">
+                            <span><%= item.label %></span>
+                            <span><%= item.count %> ข้อ</span>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <div class="part-section" style="border:none;">
+                    <h3>part 2</h3>
+                    <% course.part2.forEach(item => { %>
+                        <div class="item-row">
+                            <span><%= item.label %></span>
+                            <span><%= item.count %> ข้อ</span>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
