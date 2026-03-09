@@ -26,8 +26,10 @@
             <% } %>
             <% if (user && user.role === "admin") { %>
                 <a href="/admin/manageUser"><button>User</button></a>
+            <% } else if (user && user.role === "teacher") { %>
+                <a href="/teacher/create-exam"><button>Exam</button></a>
             <% } else { %>
-                <a href="/student"><button>Exam<button></a>
+                <a href="/student"><button>Exam</button></a>
             <% } %>
             <a href="/review"><button>Review</button></a>
         </div>
