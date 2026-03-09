@@ -398,6 +398,7 @@ a.nav-btn:hover {
     width:35px;
     height:35px;
     box-shadow:0 2px 5px rgba(0,0,0,0.2);
+    background-color: aqua;
 }
 
 
