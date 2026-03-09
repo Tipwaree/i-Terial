@@ -76,6 +76,21 @@
     </div>
 
 </div>
-
+    <h1>Bookmark</h1>
+        <div class="container">
+        <h1>Course</h1>
+        <div class="course-grid">
+            <% courses.forEach(course=> { %>
+                <a href="/courses/<%= course.slug %>" style="text-decoration:none;">
+                    <div class="course-card">
+                        <img src="<%= course.image %>" alt="<%= course.title %>">
+                        <div class="course-title">
+                            <%= course.title %>
+                        </div>
+                    </div>
+                </a>
+                <% }); %>
+        </div>
+    </div>
 </body>
 </html>
