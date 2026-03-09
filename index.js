@@ -44,18 +44,6 @@ CREATE TABLE IF NOT EXISTS users (
 )
 `);
 
-db.all(`
-SELECT courses.*
-FROM bookmarks
-JOIN courses ON bookmarks.course_id = courses.id
-WHERE bookmarks.user_id = ?
-`, [req.session.user.id], (err, bookmarks)=>{
-    
-    res.render("Profilepage", {
-        user:req.session.user,
-        bookmarks:bookmarks
-    })
-})
 
 // สร้าง admin
 db.get("SELECT * FROM users WHERE username=?", ["admin"], (err, row) => {
@@ -163,7 +151,7 @@ app.get("/profile", (req, res) => {
       if (err) courses = [];
       res.render("Profilepage", {
         user: req.session.user,
-        courses: courses
+        bookmarks: courses
       });
     }
   );
