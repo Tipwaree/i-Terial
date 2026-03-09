@@ -20,8 +20,11 @@
             <a href="/courses"><button>Search</button></a>
             <% if (user) { %>
                 <a href="/profile"><button>Profile</button></a>
+                <% if (user.role === 'teacher' || user.role === 'admin') { %>
+                    <a href="/teacher/create-course"><button>Create Course</button></a>
+                <% } %>
             <% } %>
-            <a href="/exam"><button>Exam</button></a>
+            <a href="/student"><button>Exam</button></a>
             <a href="/review"><button>Review</button></a>
         </div>
     </div>
@@ -32,6 +35,11 @@
         <div class="logbutton">
             <% if (user) { %>
                 <a href="/courses"><button>ดูคอร์สทั้งหมด</button></a>
+                
+                <% if (user.role === 'teacher' || user.role === 'admin') { %>
+                    <a href="/teacher/create-course"><button style="background-color: #4CAF50; color: white;">สร้างคอร์สใหม่</button></a>
+                <% } %>
+                
                 <a href="/logout"><button>Logout</button></a>
             <% } else { %>
                 <a href="/login"><button>Login</button></a>
