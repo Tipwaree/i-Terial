@@ -64,6 +64,7 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 
 // ─── ROUTES 
@@ -232,8 +233,8 @@ app.post("/forgot", (req, res) => {
 
 //─── NEW FROM EXAM PAGE ─────────────────────────────────────────
 
-const studentRoutes = require("/student")
-const teacherRoutes = require("/teacher")
+// const studentRoutes = require("student")
+// const teacherRoutes = require("teacher")
 
 // app.set("view engine", "ejs")
 // app.set("views", path.join(__dirname, "views"))
@@ -244,12 +245,28 @@ const teacherRoutes = require("/teacher")
 //     saveUninitialized: true
 // }))
 
-app.use("/student", studentRoutes)
-app.use("/teacher", teacherRoutes)
 
 // app.get("/", (req, res) => {
 //   res.redirect("/student")
 // })
+
+// student pages
+app.get("/student", (req, res) => {
+  res.render("student/examList")
+})
+
+app.get("/student/exam", (req, res) => {
+  res.render("student/examPage")
+})
+
+app.get("/student/result", (req, res) => {
+  res.render("student/result")
+})
+
+// teacher page
+app.get("/teacher", (req, res) => {
+  res.render("teacher/createExam")
+})
 
 
 // ─── START SERVER ─────────────────────────────────────────
