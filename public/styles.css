@@ -283,13 +283,6 @@ a.nav-btn:hover {
     position: relative;
 }
 
-.bookmark-star {
-    position: absolute;
-    bottom: 8px;
-    right: 10px;
-    font-size: 22px;
-}
-
 /* ===== EDIT PROFILE PAGE ===== */
 .formedit {
     display: flex;
@@ -393,9 +386,25 @@ a.nav-btn:hover {
 
 
 /* bookmark */
-.bookmark {
-    background-color: #1e7f1a;
-    width: 400px;
+.bookmark-form{
+    position:absolute;
+    top:10px;
+    right:10px;
+}
+
+.bookmark-btn{
+    border:none;
+    background:white;
+    font-size:20px;
+    cursor:pointer;
+    border-radius:50%;
+    width:35px;
+    height:35px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
+
+.bookmark-btn:hover{
+    background:#f2f2f2;
 }
 
 /* ===== DETAIL PAGE ===== */
@@ -522,9 +531,9 @@ a.nav-btn:hover {
 .teacher-menu {
     margin: 20px 0;
     padding: 20px;
-    background-color: #e3f2fd;
+    background-color: #f0f0f0;
     border-radius: 8px;
-    border-left: 5px solid #2196F3;
+    border-left: 5px solid #4CAF50;
 }
 
 .teacher-menu-title {
@@ -543,12 +552,12 @@ a.nav-btn:hover {
 }
 
 .btn-edit-course {
-    background-color: #2196F3;
+    background-color: #4CAF50;
     margin-right: 10px;
 }
 
 .btn-edit-course:hover {
-    background-color: #1976D2;
+    background-color: #4CAF50;
 }
 
 .btn-manage-lessons {

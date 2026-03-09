@@ -63,6 +63,15 @@ db.get("SELECT * FROM users WHERE username=?", ["teacher"], (err, row) => {
   }
 });
 
+// สร้าง student
+db.get("SELECT * FROM users WHERE username=?", ["student"], (err, row) => {
+  if (!row) {
+    db.run(`INSERT INTO users (username,password,email,role) VALUES (?,?,?,?)`,
+      ["student", "123", "student@mail.com", "student"]);
+    console.log("Student account created");
+  }
+});
+
 // courses database
 // courses database
 const coursesDb = new sqlite3.Database('courses.db', (err) => {
@@ -142,7 +151,7 @@ app.get("/profile", (req, res) => {
       if (err) courses = [];
       res.render("Profilepage", {
         user: req.session.user,
-        courses: courses
+        bookmarks: courses
       });
     }
   );
@@ -158,19 +167,27 @@ app.post("/bookmark/:id", (req, res) => {
     [userId, courseId],
     (err, row) => {
       if (row) {
-        return res.redirect("/courses");
+        // ถ้ามีอยู่แล้ว → ลบ bookmark
+        coursesDb.run(
+          "DELETE FROM bookmarks WHERE user_id=? AND course_id=?",
+          [userId, courseId],
+          () => {
+            res.redirect("/courses");
+          }
+        );
+      } else {
+        // ถ้ายังไม่มี → เพิ่ม bookmark
+        coursesDb.run(
+          "INSERT INTO bookmarks (user_id, course_id) VALUES (?,?)",
+          [userId, courseId],
+          () => {
+            res.redirect("/courses");
+          }
+        );
       }
-      coursesDb.run(
-        "INSERT INTO bookmarks (user_id, course_id) VALUES (?,?)",
-        [userId, courseId],
-        () => {
-          res.redirect("/courses");
-        }
-      );
     }
   );
 });
-
 
 
 // Edit profile
