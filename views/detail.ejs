@@ -1,67 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>i-Terial - <%= course.title %>
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
-    <header>
-        <a href="#" class="logo">i-Terial</a>
-        <nav>
-            <a href="#" class="nav-btn">Home</a>
-            <a href="#" class="nav-btn">Search</a>
-            <a href="#" class="nav-btn">Profile</a>
-            <a href="#" class="nav-btn">Exam</a>
-            <a href="#" class="nav-btn">Review</a>
-        </nav>
-    </header>
+
+    <div class="bigcontainer">
+        <div class="logo">
+            <h1>i-Terial</h1>
+        </div>
+        <div class="buttongroup">
+            <a href="/home"><button>Home</button></a>
+            <a href="/courses"><button>Search</button></a>
+            <a href="/profile"><button>Profile</button></a>
+            <a href="/exam"><button>Exam</button></a>
+            <a href="/review"><button>Review</button></a>
+        </div>
+    </div>
 
     <div class="container">
         <div class="detail-layout">
+
+            <!-- Sidebar -->
             <div class="sidebar">
                 <div class="course-card">
-                    <img src="/" alt="TPAT3">
-                    <div class="course-title">TPAT3</div>
+                    <img src="<%= course.image %>" alt="<%= course.title %>">
+                    <div class="course-title">
+                        <%= course.title %>
+                    </div>
                 </div>
                 <div style="margin: 20px 0;">
-                    <button class="nav-btn">bookmark</button>
-                    <button class="nav-btn">enroll</button>
+                    <button>bookmark</button>
+                    <button>enroll</button>
                 </div>
                 <div class="sidebar-info">
-                    <p>ผู้สอน : <%= course.teacher %></p>
-                    <p>จำนวนผู้เรียน : <%= course.students %></p>
-                    <p>คะแนน : <%= course.rating %></p>
-                    <p>รีวิว : <%= course.reviewText %></p>
+                    <p>ผู้สอน : <%= course.teacher %>
+                    </p>
+                    <p>จำนวนผู้เรียน : <%= course.students %>
+                    </p>
+                    <p>คะแนน : <%= course.rating %>
+                    </p>
+                    <p>รีวิว : <%= course.reviewText %>
+                    </p>
                     <p>บันทึกการเรียน : <%= course.progress %>%</p>
                 </div>
             </div>
 
+            <!-- Main Content -->
             <div class="main-content">
                 <div class="content-box">
-                    <h2><%= course.title %></h2>
-                    <p><%= course.description %></p>
+                    <h2>
+                        <%= course.title %>
+                    </h2>
+                    <p>
+                        <%= course.description %>
+                    </p>
                 </div>
 
                 <div class="part-section">
                     <h3>part 1</h3>
-                    <% course.part1.forEach(item => { %>
+                    <% course.part1.forEach(item=> { %>
                         <div class="item-row">
-                            <span><%= item.label %></span>
-                            <span><%= item.count %> ข้อ</span>
+                            <span>
+                                <%= item.label %>
+                            </span>
+                            <span>
+                                <%= item.count %> ข้อ
+                            </span>
                         </div>
-                    <% }); %>
+                        <% }); %>
                 </div>
 
                 <div class="part-section" style="border:none;">
                     <h3>part 2</h3>
-                    <% course.part2.forEach(item => { %>
+                    <% course.part2.forEach(item=> { %>
                         <div class="item-row">
-                            <span><%= item.label %></span>
-                            <span><%= item.count %> ข้อ</span>
+                            <span>
+                                <%= item.label %>
+                            </span>
+                            <span>
+                                <%= item.count %> ข้อ
+                            </span>
                         </div>
-                    <% }); %>
+                        <% }); %>
                 </div>
             </div>
+
         </div>
     </div>
+
 </body>
+
 </html>

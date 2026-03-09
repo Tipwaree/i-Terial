@@ -1,60 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-
-    <link rel="stylesheet" href="styles.css">
-
+    <title>i-Terial</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+
     <div class="bigcontainer">
         <div class="logo">
             <h1>i-Terial</h1>
         </div>
         <div class="buttongroup">
-            <a href="/home">
-                <button class="highbut">Home</button>
-            </a>
-            <a href="/search">
-                <button class="highbut">Search</button>
-            </a>
-            <a href="/profile">
-                <button class="highbut">Profile</button>
-            </a>
-            
-            <a href="/exam">
-                <button class="highbut">Exam</button>
-            </a>
-            <a href="/review">
-                <button class="highbut">Review</button>
-            </a>
+            <a href="/home"><button>Home</button></a>
+            <a href="/courses"><button>Search</button></a>
+            <% if (user) { %>
+                <a href="/profile"><button>Profile</button></a>
+            <% } %>
+            <a href="/exam"><button>Exam</button></a>
+            <a href="/review"><button>Review</button></a>
         </div>
     </div>
-
 
     <div class="smallcontainer">
         <h1>i-Terial</h1>
         <h2>แพลตฟอร์มติวสอบเข้าคณะเทคโนโลยีสารสนเทศ</h2>
         <div class="logbutton">
-            <a href="/login">
-                <button class="highbut">Login</button>
-            </a>
-
-            <a href="/register">
-                <button class="highbut">Register</button>
-            </a>
-
-            <a href="/logout">
-                <button class="highbut">Logout</button>
-            </a>
-
+            <% if (user) { %>
+                <a href="/courses"><button>ดูคอร์สทั้งหมด</button></a>
+                <a href="/logout"><button>Logout</button></a>
+            <% } else { %>
+                <a href="/login"><button>Login</button></a>
+                <a href="/register"><button>Register</button></a>
+            <% } %>
         </div>
     </div>
+
 </body>
 </html>
