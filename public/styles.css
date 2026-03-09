@@ -1,5 +1,7 @@
 /* ===== RESET & BASE ===== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -144,21 +146,21 @@ a.nav-btn:hover {
     margin-top: 20px;
 }
 
-.forgot{
+.forgot {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
 
-.forgot{
-    margin-top:10px;
-    text-align:center;
+.forgot {
+    margin-top: 10px;
+    text-align: center;
 }
 
-.forgot a{
-    color:#333;
-    text-decoration:none;
-    font-size:14px;
+.forgot a {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
 }
 
 .submitbutton button {
@@ -277,11 +279,11 @@ a.nav-btn:hover {
 }
 
 
-.course-card{
+.course-card {
     position: relative;
 }
 
-.bookmark-star{
+.bookmark-star {
     position: absolute;
     bottom: 8px;
     right: 10px;
@@ -444,4 +446,197 @@ a.nav-btn:hover {
     margin: 10px 0;
     font-size: 16px;
     color: #444;
+}
+
+/* =========================================
+   Detail Page Styles
+========================================= */
+
+/* Sidebar */
+.detail-course-img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.detail-course-title {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.btn-bookmark {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 5px;
+}
+
+.btn-bookmark:hover {
+    background-color: #f0f0f0;
+}
+
+.btn-enroll {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-enroll:hover {
+    background-color: #45a049;
+}
+
+.detail-sidebar-info {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* Main Content */
+.detail-content-box {
+    margin-bottom: 30px;
+}
+
+.detail-main-title {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.detail-description {
+    color: #555;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+/* Teacher Menu */
+.teacher-menu {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    border-left: 5px solid #2196F3;
+}
+
+.teacher-menu-title {
+    margin-top: 0;
+    color: #1565C0;
+    margin-bottom: 15px;
+}
+
+.btn-teacher {
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Kodchasan', sans-serif;
+}
+
+.btn-edit-course {
+    background-color: #2196F3;
+    margin-right: 10px;
+}
+
+.btn-edit-course:hover {
+    background-color: #1976D2;
+}
+
+.btn-manage-lessons {
+    background-color: #FF9800;
+}
+
+.btn-manage-lessons:hover {
+    background-color: #F57C00;
+}
+
+/* Lesson Section */
+.lesson-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.lesson-section-title {
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.lesson-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+    background: #fafafa;
+    border-radius: 8px;
+}
+
+.lesson-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.lesson-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #eaeaea;
+    padding: 15px 20px;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+.lesson-name {
+    font-weight: 500;
+    font-size: 16px;
+    color: #333;
+}
+
+.lesson-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-lesson {
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Kodchasan', sans-serif;
+    font-size: 13px;
+}
+
+.btn-pdf {
+    background-color: #f44336;
+}
+
+.btn-pdf:hover {
+    background-color: #d32f2f;
+}
+
+.btn-video {
+    background-color: #4CAF50;
+}
+
+.btn-video:hover {
+    background-color: #388E3C;
+}
+
+.lesson-no-file {
+    font-size: 13px;
+    color: #999;
+    padding: 8px 0;
 }

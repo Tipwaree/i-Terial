@@ -23,85 +23,125 @@
         <div class="buttongroup">
             <a href="/home"><button>Home</button></a>
             <a href="/courses"><button>Search</button></a>
-            <a href="/profile"><button>Profile</button></a>
-            <a href="/exam"><button>Exam</button></a>
-            <a href="/review"><button>Review</button></a>
+
+            <% if (typeof user !=='undefined' && user) { %>
+                <a href="/profile"><button>Profile</button></a>
+                <% if (user.role==='teacher' || user.role==='admin' ) { %>
+                    <a href="/teacher/create-course"><button>Create Course</button></a>
+                    <% } %>
+                        <% } %>
+
+                            <a href="/student"><button>Exam</button></a>
+                            <a href="/review"><button>Review</button></a>
         </div>
     </div>
 
     <div class="container">
         <div class="detail-layout">
 
-            <!-- Sidebar -->
             <div class="sidebar">
                 <div class="course-card">
-                    <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
-                    <%= course.title %>
+                    <img src="/uploads/<%= course.image %>" alt="<%= course.title %>" class="detail-course-img">
+                    <div class="detail-course-title">
+                        <%= course.title %>
+                    </div>
                 </div>
-                <% if (user && (user.role==='admin' || user.role==='teacher' )) { %>
-                    <hr>
-                    <a href="/teacher/edit-course/<%= course.id %>"><button>แก้ไขคอร์ส</button></a>
-                    <a href="/teacher/manage-lessons/<%= course.id %>"><button>เพิ่ม/ลบบทเรียน</button></a>
+
+                <div style="margin: 20px 0;">
+                    <button class="btn-bookmark">Bookmark</button>
+                    <button class="btn-enroll">Enroll</button>
+                </div>
+
+                <div class="detail-sidebar-info">
+                    <p><strong>ผู้สอน :</strong>
+                        <%= course.teacher %>
+                    </p>
+                    <p><strong>จำนวนผู้เรียน :</strong>
+                        <%= course.students %> คน
+                    </p>
+                    <p><strong>คะแนน :</strong>
+                        <%= course.rating %> / 5.0
+                    </p>
+                    <p><strong>รีวิว :</strong>
+                        <%= course.reviewText %>
+                    </p>
+                    <p><strong>บันทึกการเรียน :</strong>
+                        <%= course.progress %>%
+                    </p>
+                </div>
+            </div>
+
+            <div class="main-content">
+
+                <div class="detail-content-box">
+                    <h2 class="detail-main-title">
+                        <%= course.title %>
+                    </h2>
+                    <p class="detail-description">
+                        <%= course.description %>
+                    </p>
+                </div>
+
+                <% if (typeof user !=='undefined' && user && (user.role==='admin' || user.role==='teacher' )) { %>
+                    <div class="teacher-menu">
+                        <h4 class="teacher-menu-title">เมนูจัดการคอร์ส (สำหรับผู้สอน)</h4>
+                        <a href="/teacher/edit-course/<%= course.id %>">
+                            <button class="btn-teacher btn-edit-course">⚙️ แก้ไขรายละเอียดคอร์ส</button>
+                        </a>
+                        <a href="/teacher/manage-lessons/<%= course.id %>">
+                            <button class="btn-teacher btn-manage-lessons">📚 เพิ่ม/ลบบทเรียน</button>
+                        </a>
+                    </div>
                     <% } %>
-            </div>
-            <div style="margin: 20px 0;">
-                <button>bookmark</button>
-                <button>enroll</button>
-            </div>
-            <div class="sidebar-info">
-                <p>ผู้สอน : <%= course.teacher %>
-                </p>
-                <p>จำนวนผู้เรียน : <%= course.students %>
-                </p>
-                <p>คะแนน : <%= course.rating %>
-                </p>
-                <p>รีวิว : <%= course.reviewText %>
-                </p>
-                <p>บันทึกการเรียน : <%= course.progress %>%</p>
+
+                        <div class="lesson-section">
+                            <h3 class="lesson-section-title">
+                                เนื้อหาบทเรียนทั้งหมด (<%= lessons ? lessons.length : 0 %> บท)
+                            </h3>
+
+                            <% if (!lessons || lessons.length===0) { %>
+                                <div class="lesson-empty">
+                                    <p>ยังไม่มีบทเรียนในคอร์สนี้</p>
+                                    <p style="font-size: 14px;">(ผู้สอนสามารถกดปุ่ม "เพิ่ม/ลบบบทเรียน"
+                                        ด้านบนเพื่อเพิ่มเนื้อหาได้เลย)</p>
+                                </div>
+                                <% } else { %>
+                                    <div class="lesson-list-container">
+                                        <% lessons.forEach((lesson, index)=> { %>
+                                            <div class="lesson-row">
+
+                                                <div class="lesson-name">
+                                                    บทที่ <%= index + 1 %>: <%= lesson.title %>
+                                                </div>
+
+                                                <div class="lesson-actions">
+                                                    <% if (lesson.pdf_file) { %>
+                                                        <a href="/uploads/<%= lesson.pdf_file %>" target="_blank">
+                                                            <button class="btn-lesson btn-pdf">📄 เอกสาร PDF</button>
+                                                        </a>
+                                                        <% } %>
+
+                                                            <% if (lesson.video_file) { %>
+                                                                <a href="/uploads/<%= lesson.video_file %>"
+                                                                    target="_blank">
+                                                                    <button class="btn-lesson btn-video">🎬
+                                                                        วิดีโอเรียน</button>
+                                                                </a>
+                                                                <% } %>
+
+                                                                    <% if (!lesson.pdf_file && !lesson.video_file) { %>
+                                                                        <span
+                                                                            class="lesson-no-file">(ไม่มีไฟล์แนบ)</span>
+                                                                        <% } %>
+                                                </div>
+                                            </div>
+                                            <% }); %>
+                                    </div>
+                                    <% } %>
+                        </div>
+
             </div>
         </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-box">
-                <h2>
-                    <%= course.title %>
-                </h2>
-                <p>
-                    <%= course.description %>
-                </p>
-            </div>
-
-            <div class="part-section">
-                <h3>part 1</h3>
-                <% course.part1.forEach(item=> { %>
-                    <div class="item-row">
-                        <span>
-                            <%= item.label %>
-                        </span>
-                        <span>
-                            <%= item.count %> ข้อ
-                        </span>
-                    </div>
-                    <% }); %>
-            </div>
-
-            <div class="part-section" style="border:none;">
-                <h3>part 2</h3>
-                <% course.part2.forEach(item=> { %>
-                    <div class="item-row">
-                        <span>
-                            <%= item.label %>
-                        </span>
-                        <span>
-                            <%= item.count %> ข้อ
-                        </span>
-                    </div>
-                    <% }); %>
-            </div>
-        </div>
-
-    </div>
     </div>
 
 </body>

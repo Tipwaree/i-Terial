@@ -188,37 +188,6 @@ app.get("/courses", (req, res) => {
   });
 });
 
-// Course detail (หน้าดูรายละเอียดคอร์ส - แก้ไขป้องกันเว็บพังแล้ว)
-app.get("/courses/:slug", (req, res) => {
-  if (!req.session.user) return res.redirect("/login");
-  
-  coursesDb.get("SELECT * FROM courses WHERE slug=?", [req.params.slug], (err, course) => {
-    if (!course) return res.status(404).send("Course not found");
-    
-    // พยายามดึงข้อมูลส่วนของ Part ต่างๆ ของคอร์ส (เผื่อในอนาคตมีตาราง course_parts)
-    coursesDb.all(
-      "SELECT part_number, label, count FROM course_parts WHERE course_id=? ORDER BY part_number, id",
-      [course.id],
-      (err, parts) => {
-        // ดัก Error ไว้: ถ้าไม่มีตาราง course_parts ให้ใช้ Array ว่างแทน เพื่อไม่ให้เว็บพัง
-        const safeParts = parts || []; 
-        
-        course.part1 = safeParts.filter(p => p.part_number === 1);
-        course.part2 = safeParts.filter(p => p.part_number === 2);
-        
-        // ข้อมูลจำลอง (Mock) ไปก่อน เนื่องจากในฐานข้อมูลเรายังไม่มีข้อมูลเหล่านี้
-        course.teacher = "คุณครูผู้สอน";
-        course.students = 0;
-        course.rating = 5.0;
-        course.reviewText = "ยังไม่มีรีวิว";
-        course.progress = 0;
-
-        res.render("detail", { course, user: req.session.user });
-      }
-    );
-  });
-});
-
 // หลัง login teacher
 app.get("/teacher", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
@@ -392,6 +361,33 @@ app.post("/teacher/create-course", upload.single("image"), (req, res) => {
       res.send("<script>alert('สร้างคอร์สสำเร็จ!'); window.location.href='/courses';</script>");
     }
   );
+});
+
+// Course detail (หน้าดูรายละเอียดคอร์ส และแสดงบทเรียน)
+app.get("/courses/:slug", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  
+  // 1. ดึงข้อมูลคอร์ส
+  coursesDb.get("SELECT * FROM courses WHERE slug=?", [req.params.slug], (err, course) => {
+    if (!course) return res.status(404).send("Course not found");
+    
+    // ข้อมูลจำลอง (Mock) สำหรับ Sidebar
+    course.teacher = "คุณครูผู้สอน";
+    course.students = 0;
+    course.rating = 5.0;
+    course.reviewText = "ยังไม่มีรีวิว";
+    course.progress = 0;
+
+    // 2. ดึงข้อมูลบทเรียน (Lessons) ทั้งหมดที่อยู่ในคอร์สนี้
+    coursesDb.all("SELECT * FROM lessons WHERE course_id=?", [course.id], (err, lessons) => {
+      // ส่งตัวแปร course และ lessons ไปให้หน้า detail.ejs
+      res.render("detail", { 
+        course: course, 
+        lessons: lessons || [], 
+        user: req.session.user 
+      });
+    });
+  });
 });
 
 // ─── START SERVER ─────────────────────────────────────────
