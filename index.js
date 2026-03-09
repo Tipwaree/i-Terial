@@ -53,6 +53,24 @@ db.get("SELECT * FROM users WHERE username=?", ["admin"], (err, row) => {
   }
 });
 
+// สร้าง teacher
+db.get("SELECT * FROM users WHERE username=?", ["teacher"], (err, row) => {
+  if (!row) {
+    db.run(`INSERT INTO users (username,password,email,role) VALUES (?,?,?,?)`,
+      ["teacher", "123", "teacher@mail.com", "teacher"]);
+    console.log("Teacher account created");
+  }
+});
+
+//หลัง login teacher
+app.get("/teacher", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  if (req.session.user.role !== "teacher" && req.session.user.role !== "admin") {
+    return res.send("Access denied");
+  }
+  res.render("home");
+});
+
 // courses database
 const coursesDb = new sqlite3.Database('courses.db', (err) => {
   if (err) console.error(err.message);
