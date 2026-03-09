@@ -322,6 +322,91 @@ app.post("/teacher/create-course", upload.single("image"), (req, res) => {
   );
 });
 
+// ─── TEACHER PAGES: EDIT COURSE & MANAGE LESSONS ────────────────────────
+
+// 1. สร้างตาราง lessons (บทเรียน) ใน courses.db
+coursesDb.run(`
+  CREATE TABLE IF NOT EXISTS lessons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER,
+    title TEXT,
+    pdf_file TEXT,
+    video_file TEXT
+  )
+`);
+
+// 2. GET: หน้าแก้ไขคอร์ส
+app.get("/teacher/edit-course/:id", (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) return res.redirect("/login");
+  
+  coursesDb.get("SELECT * FROM courses WHERE id=? AND teacher_id=?", [req.params.id, req.session.user.id], (err, course) => {
+    if (!course) return res.send("<script>alert('ไม่พบคอร์ส หรือคุณไม่มีสิทธิ์แก้ไข'); window.location.href='/courses';</script>");
+    res.render("teacher/editCourse", { course, user: req.session.user });
+  });
+});
+
+// 3. POST: บันทึกการแก้ไขคอร์ส
+app.post("/teacher/edit-course/:id", upload.single("image"), (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) return res.redirect("/login");
+
+  const { title, description } = req.body;
+  
+  // ดึงรูปเก่ามาใช้ถ้ารูปใหม่ไม่ได้อัปโหลด
+  coursesDb.get("SELECT image FROM courses WHERE id=?", [req.params.id], (err, course) => {
+    const image = req.file ? req.file.filename : course.image;
+    
+    coursesDb.run(
+      `UPDATE courses SET title=?, description=?, image=? WHERE id=? AND teacher_id=?`,
+      [title, description, image, req.params.id, req.session.user.id],
+      (err) => {
+        if (err) return res.send("Update failed");
+        res.redirect("/courses");
+      }
+    );
+  });
+});
+
+// 4. GET: หน้าจัดการบทเรียน (เพิ่ม PDF / Video)
+app.get("/teacher/manage-lessons/:course_id", (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) return res.redirect("/login");
+
+  const courseId = req.params.course_id;
+  coursesDb.get("SELECT * FROM courses WHERE id=?", [courseId], (err, course) => {
+    if (!course) return res.send("Course not found");
+    
+    // ดึงบทเรียนทั้งหมดของคอร์สนี้มาแสดง
+    coursesDb.all("SELECT * FROM lessons WHERE course_id=?", [courseId], (err, lessons) => {
+      res.render("teacher/manageLessons", { course, lessons, user: req.session.user });
+    });
+  });
+});
+
+// 5. POST: บันทึกบทเรียนใหม่ (รองรับการอัปโหลด 2 ไฟล์พร้อมกัน: pdf และ video)
+const uploadLessonFiles = upload.fields([
+  { name: 'pdf', maxCount: 1 },
+  { name: 'video', maxCount: 1 }
+]);
+
+app.post("/teacher/add-lesson/:course_id", uploadLessonFiles, (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) return res.redirect("/login");
+
+  const { title } = req.body;
+  const courseId = req.params.course_id;
+  
+  // เช็คว่ามีการอัปโหลดไฟล์มาไหม ถ้ามีให้เอาชื่อไฟล์มา
+  const pdfFile = req.files['pdf'] ? req.files['pdf'][0].filename : null;
+  const videoFile = req.files['video'] ? req.files['video'][0].filename : null;
+
+  coursesDb.run(
+    `INSERT INTO lessons (course_id, title, pdf_file, video_file) VALUES (?, ?, ?, ?)`,
+    [courseId, title, pdfFile, videoFile],
+    function(err) {
+      if (err) return res.send("Error adding lesson");
+      res.redirect(`/teacher/manage-lessons/${courseId}`);
+    }
+  );
+});
+
 // ─── START SERVER ─────────────────────────────────────────
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
