@@ -254,7 +254,7 @@ app.post("/register", (req, res) => {
     db.run(
       `INSERT INTO users (username,password,phone,email,address,gender,role,image) VALUES (?,?,?,?,?,?,?,?)`,
       [username, password, phone, email, address, gender, role, null],
-      function(err) {
+      function (err) {
         if (err) return res.send("Register failed");
         req.session.user = { id: this.lastID, username, email, role };
         res.redirect("/home");
@@ -322,18 +322,16 @@ app.post("/forgot", (req, res) => {
 
 //─── EXAM & STUDENT PAGES ───────────────────────────────────────
 
-app.get("/student", (req, res) => {
+app.get("/exam", (req, res) => {
   // เพิ่ม mockExams เพื่อแก้บั๊ก exams is not defined
-  const mockExams = [
-    { id: 1, name: "วิชาเทคโนโลยีสารสนเทศเบื้องต้น" },
-    { id: 2, name: "วิชาการเขียนโปรแกรม (Programming)" },
-    { id: 3, name: "วิชาคณิตศาสตร์คอมพิวเตอร์" }
+  const subjects = [
+    { id: 1, name: "TGAT1" },
+    { id: 2, name: "TGAT2" },
+    { id: 3, name: "TPAT3" },
+    { id: 4, name: "A-level คณิต 1" },
+    { id: 5, name: "A-level อังกฤษ" }
   ];
-  res.render("student/examList", { exams: mockExams, user: req.session.user });
-});
-
-app.get("/student/exam", (req, res) => {
-  res.render("student/examPage", { user: req.session.user });
+  res.render("student/examList", { subjects: subjects, user: req.session.user });
 });
 
 app.get("/student/result", (req, res) => {
@@ -341,9 +339,41 @@ app.get("/student/result", (req, res) => {
 });
 
 // teacher exam page
-app.get("/teacher/create-exam", (req, res) => {
-  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) return res.redirect("/login");
-  res.render("teacher/createExam", { user: req.session.user });
+app.get("/teacher/exams", (req, res) => {
+
+  if (!req.session.user || req.session.user.role !== "teacher") {
+    return res.redirect("/login");
+  }
+
+  const subjects = [
+    { id: 1, name: "TGAT1" },
+    { id: 2, name: "TGAT2" },
+    { id: 3, name: "TPAT3" },
+    { id: 4, name: "A-level คณิต 1" },
+    { id: 5, name: "A-level อังกฤษ" }
+  ];
+
+  res.render("teacher/examList", {
+    user: req.session.user,
+    subjects: subjects
+  });
+
+});
+
+app.get("/teacher/create-exam/:id", (req, res) => {
+
+  if (!req.session.user || req.session.user.role !== "teacher")
+    return res.redirect("/login");
+
+  const subject_id = req.params.id;
+
+  res.render("teacher/createExam", {
+    user: req.session.user,
+    exam: null,
+    subject_id: subject_id,
+    questions: []
+  });
+
 });
 
 
@@ -352,7 +382,7 @@ app.get("/teacher/create-exam", (req, res) => {
 // GET: แสดงหน้าฟอร์มสร้างคอร์สเรียน
 app.get("/teacher/create-course", (req, res) => {
   if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) {
-     return res.send("<script>alert('Unauthorized access: สำหรับ Teacher เท่านั้น'); window.location.href='/home';</script>");
+    return res.send("<script>alert('Unauthorized access: สำหรับ Teacher เท่านั้น'); window.location.href='/home';</script>");
   }
   res.render("teacher/createCourse", { user: req.session.user });
 });
@@ -360,17 +390,17 @@ app.get("/teacher/create-course", (req, res) => {
 // POST: รับข้อมูลจากฟอร์มเพื่อบันทึกลง Database
 app.post("/teacher/create-course", upload.single("image"), (req, res) => {
   if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) {
-     return res.redirect("/login");
+    return res.redirect("/login");
   }
 
   const { title, description } = req.body;
-  const image = req.file ? req.file.filename : null; 
+  const image = req.file ? req.file.filename : null;
   const slug = title.toLowerCase().replace(/[^a-zA-Z0-9ก-๙]+/g, '-').replace(/(^-|-$)+/g, '') || Date.now().toString();
 
   coursesDb.run(
     `INSERT INTO courses (title, slug, description, image, teacher_id) VALUES (?, ?, ?, ?, ?)`,
     [title, slug, description, image, req.session.user.id],
-    function(err) {
+    function (err) {
       if (err) {
         console.error("Database Error:", err.message);
         return res.send(`<script>alert('เกิดข้อผิดพลาดในการสร้างคอร์ส อาจเป็นเพราะชื่อซ้ำ'); window.location.href='/teacher/create-course';</script>`);
@@ -383,11 +413,11 @@ app.post("/teacher/create-course", upload.single("image"), (req, res) => {
 // Course detail (หน้าดูรายละเอียดคอร์ส และแสดงบทเรียน)
 app.get("/courses/:slug", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
-  
+
   // 1. ดึงข้อมูลคอร์ส
   coursesDb.get("SELECT * FROM courses WHERE slug=?", [req.params.slug], (err, course) => {
     if (!course) return res.status(404).send("Course not found");
-    
+
     // ข้อมูลจำลอง (Mock) สำหรับ Sidebar
     course.teacher = "คุณครูผู้สอน";
     course.students = 0;
@@ -398,10 +428,10 @@ app.get("/courses/:slug", (req, res) => {
     // 2. ดึงข้อมูลบทเรียน (Lessons) ทั้งหมดที่อยู่ในคอร์สนี้
     coursesDb.all("SELECT * FROM lessons WHERE course_id=?", [course.id], (err, lessons) => {
       // ส่งตัวแปร course และ lessons ไปให้หน้า detail.ejs
-      res.render("detail", { 
-        course: course, 
-        lessons: lessons || [], 
-        user: req.session.user 
+      res.render("detail", {
+        course: course,
+        lessons: lessons || [],
+        user: req.session.user
       });
     });
   });

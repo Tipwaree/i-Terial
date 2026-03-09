@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -56,103 +56,125 @@
 
 <body>
 
-    <%- include('../partials/navbar') %>
+    <div class="bigcontainer">
+        <div class="logo">
+            <h1>i-Terial</h1>
+        </div>
+        <div class="buttongroup">
+            <a href="/home"><button>Home</button></a>
+            <a href="/courses"><button>Search</button></a>
+            <% if (user) { %>
+                <a href="/profile"><button>Profile</button></a>
+                <% if (user.role==='teacher' || user.role==='admin' ) { %>
+                    <a href="/teacher/create-course"><button>Create Course</button></a>
+                    <% } %>
+                        <% } %>
+                            <% if (user && user.role==="admin" ) { %>
+                                <a href="/admin/manageUser"><button>User</button></a>
+                                <% } else if (user && user.role==="teacher" ) { %>
+                                    <a href="/teacher/create-exam"><button>Create Exam</button></a>
+                                    <% } else { %>
+                                        <a href="/exam"><button>Exam</button></a>
+                                        <% } %>
+                                            <a href="/review"><button>Review</button></a>
+        </div>
+    </div>
 
-        <div class="exam-container">
+    <div class="exam-container">
 
-            <% if(questions && questions.length> 0){ %>
+        <% if(questions && questions.length> 0){ %>
 
-                <form action="/student/submit" method="POST">
+            <form action="/student/submit" method="POST">
 
-                    <input type="hidden" name="subject_id" value="<%= questions[0].subject_id %>">
+                <input type="hidden" name="subject_id" value="<%= questions[0].subject_id %>">
 
-                    <% questions.forEach(q=> { %>
+                <% questions.forEach(q=> { %>
 
-                        <div class="question">
+                    <div class="question">
 
-                            <p><b>
-                                    <%= q.question %>
-                                </b></p>
+                        <p><b>
+                                <%= q.question %>
+                            </b></p>
 
 
-                            <!-- ก -->
-                            <label class="
+                        <!-- ก -->
+                        <label class="
                             <% if(answers && parseInt(answers[q.id]) === 1 && q.answer != 1){ %> wrong <% } %>
                             <% if(answers && q.answer == 1){ %> correct <% } %>
                             ">
 
-                                <input type="radio" name="q<%= q.id %>" value="1" <%=answers &&
-                                    parseInt(answers[q.id])===1 ? "checked" : "" %>
-                                >
+                            <input type="radio" name="q<%= q.id %>" value="1" <%=answers && parseInt(answers[q.id])===1
+                                ? "checked" : "" %>
+                            >
 
-                                ก. <%= q.choice1 %>
+                            ก. <%= q.choice1 %>
 
-                            </label>
+                        </label>
 
 
-                            <!-- ข -->
-                            <label class="
+                        <!-- ข -->
+                        <label class="
                             <% if(answers && parseInt(answers[q.id]) === 2 && q.answer != 2){ %> wrong <% } %>
                             <% if(answers && q.answer == 2){ %> correct <% } %>
                             ">
 
-                                <input type="radio" name="q<%= q.id %>" value="2" <%=answers &&
-                                    parseInt(answers[q.id])===2 ? "checked" : "" %>
-                                >
+                            <input type="radio" name="q<%= q.id %>" value="2" <%=answers && parseInt(answers[q.id])===2
+                                ? "checked" : "" %>
+                            >
 
-                                ข. <%= q.choice2 %>
+                            ข. <%= q.choice2 %>
 
-                            </label>
+                        </label>
 
 
-                            <!-- ค -->
-                            <label class="
+                        <!-- ค -->
+                        <label class="
                             <% if(answers && parseInt(answers[q.id]) === 3 && q.answer != 3){ %> wrong <% } %>
                             <% if(answers && q.answer == 3){ %> correct <% } %>
                             ">
 
-                                <input type="radio" name="q<%= q.id %>" value="3" <%=answers &&
-                                    parseInt(answers[q.id])===3 ? "checked" : "" %>
-                                >
+                            <input type="radio" name="q<%= q.id %>" value="3" <%=answers && parseInt(answers[q.id])===3
+                                ? "checked" : "" %>
+                            >
 
-                                ค. <%= q.choice3 %>
+                            ค. <%= q.choice3 %>
 
-                            </label>
+                        </label>
 
 
-                            <!-- ง -->
-                            <label class="
+                        <!-- ง -->
+                        <label class="
                             <% if(answers && parseInt(answers[q.id]) === 4 && q.answer != 4){ %> wrong <% } %>
                             <% if(answers && q.answer == 4){ %> correct <% } %>
                             ">
 
-                                <input type="radio" name="q<%= q.id %>" value="4" <%=answers &&
-                                    parseInt(answers[q.id])===4 ? "checked" : "" %>
-                                >
+                            <input type="radio" name="q<%= q.id %>" value="4" <%=answers && parseInt(answers[q.id])===4
+                                ? "checked" : "" %>
+                            >
 
-                                ง. <%= q.choice4 %>
+                            ง. <%= q.choice4 %>
 
-                            </label>
+                        </label>
 
-                            <hr>
+                        <hr>
 
-                        </div>
+                    </div>
 
-                        <% }) %>
+                    <% }) %>
 
-                            <button type="submit">ส่งคำตอบ</button>
+                        <button type="submit">ส่งคำตอบ</button>
 
-                </form>
+            </form>
 
-                <% } else { %>
+            <% } else { %>
 
-                    <h3 style="margin-top:40px;color:#666;">
-                        ยังไม่มีข้อสอบในวิชานี้
-                    </h3>
+                <h3 style="margin-top:40px;color:#666;">
+                    ยังไม่มีข้อสอบในวิชานี้
+                </h3>
 
-                    <% } %>
+                <% } %>
 
-        </div>
+    </div>
 
 </body>
 

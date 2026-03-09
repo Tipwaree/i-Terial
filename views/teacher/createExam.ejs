@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -94,86 +94,107 @@
 
 <body>
 
-    <%- include('../partials/navbar') %>
+    <div class="bigcontainer">
+        <div class="logo">
+            <h1>i-Terial</h1>
+        </div>
+        <div class="buttongroup">
+            <a href="/home"><button>Home</button></a>
+            <a href="/courses"><button>Search</button></a>
+            <% if (user) { %>
+                <a href="/profile"><button>Profile</button></a>
+                <% if (user.role==='teacher' || user.role==='admin' ) { %>
+                    <a href="/teacher/create-course"><button>Create Course</button></a>
+                    <% } %>
+                        <% } %>
+                            <% if (user && user.role==="admin" ) { %>
+                                <a href="/admin/manageUser"><button>User</button></a>
+                                <% } else if (user && user.role==="teacher" ) { %>
+                                    <a href="/teacher/create-exam"><button>Create Exam</button></a>
+                                    <% } else { %>
+                                        <a href="/exam"><button>Exam</button></a>
+                                        <% } %>
+                                            <a href="/review"><button>Review</button></a>
+        </div>
+    </div>
 
-        <div class="container">
+    <div class="container">
 
-            <h2>Create Exam วิชา : <%= exam ? exam.name : "Unknown Subject" %>
-            </h2>
-            <p>ผู้สอน : แพทย์หญิง จันทพร</p>
+        <h2>Create Exam วิชา : <%= exam ? exam.name : "Unknown Subject" %>
+        </h2>
 
-            <button type="button" class="add-btn" onclick="addQuestion()">เพิ่มคำถาม</button>
+        <button type="button" class="add-btn" onclick="addQuestion()">เพิ่มคำถาม</button>
 
-            <form action="/teacher/saveExam" method="POST">
+        <form action="/teacher/saveExam" method="POST">
 
-                <input type="hidden" name="subject_id" value="<%= subject_id %>">
+            <input type="hidden" name="subject_id" value="<%= subject_id %>">
 
-                <div id="question-container">
+            <div id="question-container">
 
-                    <% if(questions && questions.length> 0){ %>
+                <% if(questions && questions.length> 0){ %>
 
-                        <% questions.forEach((q,index)=>{ %>
+                    <% questions.forEach((q,index)=>{ %>
 
-                            <div class="question-block">
+                        <div class="question-block">
 
-                                <div class="question-header">
-                                    <h4>คำถามข้อที่ <%= index+1 %>
-                                    </h4>
-                                    <button type="button" class="delete-btn" onclick="deleteQuestion(this)">ลบ</button>
-                                </div>
+                            <div class="question-header">
+                                <h4>คำถามข้อที่ <%= index+1 %>
+                                </h4>
+                                <button type="button" class="delete-btn" onclick="deleteQuestion(this)">ลบ</button>
+                            </div>
 
-                                <input name="question[]" value="<%= q.question %>" placeholder="คำถาม">
+                            <input name="question[]" value="<%= q.question %>" placeholder="คำถาม">
 
-                                <div class="choice-row">
-                                    <span>ก.</span>
-                                    <input name="choice1[]" value="<%= q.choice1 %>" placeholder="ตัวเลือกที่ 1">
-                                </div>
+                            <div class="choice-row">
+                                <span>ก.</span>
+                                <input name="choice1[]" value="<%= q.choice1 %>" placeholder="ตัวเลือกที่ 1">
+                            </div>
 
-                                <div class="choice-row">
-                                    <span>ข.</span>
-                                    <input name="choice2[]" value="<%= q.choice2 %>" placeholder="ตัวเลือกที่ 2">
-                                </div>
+                            <div class="choice-row">
+                                <span>ข.</span>
+                                <input name="choice2[]" value="<%= q.choice2 %>" placeholder="ตัวเลือกที่ 2">
+                            </div>
 
-                                <div class="choice-row">
-                                    <span>ค.</span>
-                                    <input name="choice3[]" value="<%= q.choice3 %>" placeholder="ตัวเลือกที่ 3">
-                                </div>
+                            <div class="choice-row">
+                                <span>ค.</span>
+                                <input name="choice3[]" value="<%= q.choice3 %>" placeholder="ตัวเลือกที่ 3">
+                            </div>
 
-                                <div class="choice-row">
-                                    <span>ง.</span>
-                                    <input name="choice4[]" value="<%= q.choice4 %>" placeholder="ตัวเลือกที่ 4">
-                                </div>
+                            <div class="choice-row">
+                                <span>ง.</span>
+                                <input name="choice4[]" value="<%= q.choice4 %>" placeholder="ตัวเลือกที่ 4">
+                            </div>
 
-                                <div class="answer-row">
+                            <div class="answer-row">
 
-                                    <label>เฉลย :</label>
+                                <label>เฉลย :</label>
 
-                                    <select name="answer[]">
+                                <select name="answer[]">
 
-                                        <option value="1" <%=q.answer==1 ? "selected" : "" %>>ก.</option>
-                                        <option value="2" <%=q.answer==2 ? "selected" : "" %>>ข.</option>
-                                        <option value="3" <%=q.answer==3 ? "selected" : "" %>>ค.</option>
-                                        <option value="4" <%=q.answer==4 ? "selected" : "" %>>ง.</option>
+                                    <option value="1" <%=q.answer==1 ? "selected" : "" %>>ก.</option>
+                                    <option value="2" <%=q.answer==2 ? "selected" : "" %>>ข.</option>
+                                    <option value="3" <%=q.answer==3 ? "selected" : "" %>>ค.</option>
+                                    <option value="4" <%=q.answer==4 ? "selected" : "" %>>ง.</option>
 
-                                    </select>
-
-                                </div>
-
-                                <hr>
+                                </select>
 
                             </div>
 
-                            <% }) %>
+                            <hr>
 
-                                <% } %>
+                        </div>
 
-                </div>
+                        <% }) %>
 
-                <button type="submit" class="submit-btn">บันทึก</button>
+                            <% } %>
 
-            </form>
+            </div>
 
-        </div>
+            <button type="submit" class="submit-btn">บันทึก</button>
+
+        </form>
+
+    </div>
 
 </body>
 
