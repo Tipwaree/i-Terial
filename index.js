@@ -62,20 +62,23 @@ db.get("SELECT * FROM users WHERE username=?", ["teacher"], (err, row) => {
   }
 });
 
-//หลัง login teacher
-app.get("/teacher", (req, res) => {
-  if (!req.session.user) return res.redirect("/login");
-  if (req.session.user.role !== "teacher" && req.session.user.role !== "admin") {
-    return res.send("Access denied");
-  }
-  res.render("home");
-});
-
 // courses database
 const coursesDb = new sqlite3.Database('courses.db', (err) => {
   if (err) console.error(err.message);
   console.log("Connected to courses database");
 });
+
+// สร้างตาราง courses (หากยังไม่มี)
+coursesDb.run(`
+  CREATE TABLE IF NOT EXISTS courses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    slug TEXT UNIQUE,
+    description TEXT,
+    image TEXT,
+    teacher_id INTEGER
+  )
+`);
 
 // middleware
 app.use(express.static("public"));
@@ -85,7 +88,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 
-// ─── ROUTES 
+// ─── ROUTES ───────────────────────────────────────────────
 
 app.get("/", (req, res) => {
   res.redirect("/home");
@@ -129,32 +132,54 @@ app.get("/profile/edit", (req, res) => {
   res.render("EditProfile", { user: req.session.user });
 });
 
-// Courses (ต้อง login)
+// Courses (หน้ารวมคอร์ส)
 app.get("/courses", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
   coursesDb.all("SELECT * FROM courses", [], (err, courses) => {
     if (err) return res.send("Error loading courses");
-    res.render("courses", { courses });
+    res.render("courses", { courses, user: req.session.user });
   });
 });
 
-// Course detail (ต้อง login)
+// Course detail (หน้าดูรายละเอียดคอร์ส - แก้ไขป้องกันเว็บพังแล้ว)
 app.get("/courses/:slug", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
+  
   coursesDb.get("SELECT * FROM courses WHERE slug=?", [req.params.slug], (err, course) => {
     if (!course) return res.status(404).send("Course not found");
+    
+    // พยายามดึงข้อมูลส่วนของ Part ต่างๆ ของคอร์ส (เผื่อในอนาคตมีตาราง course_parts)
     coursesDb.all(
       "SELECT part_number, label, count FROM course_parts WHERE course_id=? ORDER BY part_number, id",
       [course.id],
       (err, parts) => {
-        course.part1 = parts.filter(p => p.part_number === 1);
-        course.part2 = parts.filter(p => p.part_number === 2);
-        res.render("detail", { course });
+        // ดัก Error ไว้: ถ้าไม่มีตาราง course_parts ให้ใช้ Array ว่างแทน เพื่อไม่ให้เว็บพัง
+        const safeParts = parts || []; 
+        
+        course.part1 = safeParts.filter(p => p.part_number === 1);
+        course.part2 = safeParts.filter(p => p.part_number === 2);
+        
+        // ข้อมูลจำลอง (Mock) ไปก่อน เนื่องจากในฐานข้อมูลเรายังไม่มีข้อมูลเหล่านี้
+        course.teacher = "คุณครูผู้สอน";
+        course.students = 0;
+        course.rating = 5.0;
+        course.reviewText = "ยังไม่มีรีวิว";
+        course.progress = 0;
+
+        res.render("detail", { course, user: req.session.user });
       }
     );
   });
 });
 
+// หลัง login teacher
+app.get("/teacher", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  if (req.session.user.role !== "teacher" && req.session.user.role !== "admin") {
+    return res.send("Access denied");
+  }
+  res.redirect("/home"); // เปลี่ยนจาก res.render("home") เป็น res.redirect เพื่อให้ตัวแปร user ทำงานปกติ
+});
 
 // ─── POST ROUTES ─────────────────────────────────────────
 
@@ -215,7 +240,6 @@ app.post("/profile/update", upload.single("image"), (req, res) => {
   );
 });
 
-
 // forgotpage
 app.post("/forgot", (req, res) => {
   const { login, newpassword } = req.body;
@@ -223,69 +247,80 @@ app.post("/forgot", (req, res) => {
     "SELECT * FROM users WHERE username=? OR email=?",
     [login, login],
     (err, row) => {
-
       if (!row) {
-        return res.send(`<script>
-        alert("User not found");
-        window.location.href="/forgot";
-        </script>`);
+        return res.send(`<script>alert("User not found"); window.location.href="/forgot";</script>`);
       }
       db.run(
         "UPDATE users SET password=? WHERE id=?",
         [newpassword, row.id],
         (err) => {
-
           if (err) return res.send("Error resetting password");
-
-          res.send(`<script>
-          alert("Password reset success");
-          window.location.href="/login";
-          </script>`);
+          res.send(`<script>alert("Password reset success"); window.location.href="/login";</script>`);
         }
       );
-
     }
   );
 });
 
+//─── EXAM & STUDENT PAGES ───────────────────────────────────────
 
-//─── NEW FROM EXAM PAGE ─────────────────────────────────────────
-
-// const studentRoutes = require("student")
-// const teacherRoutes = require("teacher")
-
-// app.set("view engine", "ejs")
-// app.set("views", path.join(__dirname, "views"))
-
-// app.use(session({
-//     secret: "exam-secret",
-//     resave: false,
-//     saveUninitialized: true
-// }))
-
-
-// app.get("/", (req, res) => {
-//   res.redirect("/student")
-// })
-
-// student pages
 app.get("/student", (req, res) => {
-  res.render("student/examList")
-})
+  // เพิ่ม mockExams เพื่อแก้บั๊ก exams is not defined
+  const mockExams = [
+    { id: 1, name: "วิชาเทคโนโลยีสารสนเทศเบื้องต้น" },
+    { id: 2, name: "วิชาการเขียนโปรแกรม (Programming)" },
+    { id: 3, name: "วิชาคณิตศาสตร์คอมพิวเตอร์" }
+  ];
+  res.render("student/examList", { exams: mockExams, user: req.session.user });
+});
 
 app.get("/student/exam", (req, res) => {
-  res.render("student/examPage")
-})
+  res.render("student/examPage", { user: req.session.user });
+});
 
 app.get("/student/result", (req, res) => {
-  res.render("student/result")
-})
+  res.render("student/result", { user: req.session.user });
+});
 
-// teacher page
-app.get("/teacher", (req, res) => {
-  res.render("teacher/createExam")
-})
+// teacher exam page
+app.get("/teacher/create-exam", (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) return res.redirect("/login");
+  res.render("teacher/createExam", { user: req.session.user });
+});
 
+
+// ─── TEACHER PAGES (CREATE COURSE) ────────────────────────────────
+
+// GET: แสดงหน้าฟอร์มสร้างคอร์สเรียน
+app.get("/teacher/create-course", (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) {
+     return res.send("<script>alert('Unauthorized access: สำหรับ Teacher เท่านั้น'); window.location.href='/home';</script>");
+  }
+  res.render("teacher/createCourse", { user: req.session.user });
+});
+
+// POST: รับข้อมูลจากฟอร์มเพื่อบันทึกลง Database
+app.post("/teacher/create-course", upload.single("image"), (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) {
+     return res.redirect("/login");
+  }
+
+  const { title, description } = req.body;
+  const image = req.file ? req.file.filename : null; 
+  const slug = title.toLowerCase().replace(/[^a-zA-Z0-9ก-๙]+/g, '-').replace(/(^-|-$)+/g, '') || Date.now().toString();
+
+  coursesDb.run(
+    `INSERT INTO courses (title, slug, description, image, teacher_id) VALUES (?, ?, ?, ?, ?)`,
+    [title, slug, description, image, req.session.user.id],
+    function(err) {
+      if (err) {
+        console.error("Database Error:", err.message);
+        return res.send(`<script>alert('เกิดข้อผิดพลาดในการสร้างคอร์ส อาจเป็นเพราะชื่อซ้ำ'); window.location.href='/teacher/create-course';</script>`);
+      }
+      res.send("<script>alert('สร้างคอร์สสำเร็จ!'); window.location.href='/courses';</script>");
+    }
+  );
+});
 
 // ─── START SERVER ─────────────────────────────────────────
 app.listen(port, () => {
