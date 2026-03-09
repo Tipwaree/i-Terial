@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Lessons - <%= course.title %></title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container" style="padding: 20px;">
+        <h2>จัดการบทเรียน: <%= course.title %></h2>
+        <a href="/courses/<%= course.slug %>" style="display:inline-block; margin-bottom: 20px;"><button>กลับไปหน้าคอร์ส</button></a>
+
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h3>เพิ่มบทเรียนใหม่</h3>
+            <form action="/teacher/add-lesson/<%= course.id %>" method="POST" enctype="multipart/form-data">
+                <p>ชื่อบทเรียน: <input type="text" name="title" required></p>
+                <p>อัปโหลดไฟล์ PDF: <input type="file" name="pdf" accept=".pdf"></p>
+                <p>อัปโหลดไฟล์ Video: <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*"></p>
+                <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px;">เพิ่มบทเรียน</button>
+            </form>
+        </div>
+
+        <h3>บทเรียนทั้งหมดในคอร์สนี้</h3>
+        <% if (lessons.length === 0) { %>
+            <p>ยังไม่มีบทเรียน</p>
+        <% } else { %>
+            <ul>
+                <% lessons.forEach(lesson => { %>
+                    <li style="margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                        <strong><%= lesson.title %></strong><br>
+                        <% if (lesson.pdf_file) { %>
+                            <a href="/uploads/<%= lesson.pdf_file %>" target="_blank">📄 เปิดไฟล์ PDF</a> | 
+                        <% } %>
+                        <% if (lesson.video_file) { %>
+                            <a href="/uploads/<%= lesson.video_file %>" target="_blank">🎬 ดู Video</a>
+                        <% } %>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+    </div>
+</body>
+</html>
