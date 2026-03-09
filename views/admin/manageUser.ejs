@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Lessons - i-Terial</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
+    <style>
+        .container {
+            width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            background: #e6dec6;
+            border-radius: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid #444;
+        }
+
+        .user-row {
+            background: #ddd;
+            padding: 16px 20px;
+            margin: 14px 0;
+            border-radius: 14px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group button {
+            background: #7f9c34;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+        }
+
+        .update {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .update-btn {
+            background: #7f9c34;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bigcontainer">
+        <div class="logo">
+            <h1>i-Terial</h1>
+        </div>
+        <div class="buttongroup">
+            <a href="/home"><button>Home</button></a>
+            <a href="/courses"><button>Search</button></a>
+            <% if (user) { %>
+                <a href="/profile"><button>Profile</button></a>
+                <% if (user.role==='teacher' || user.role==='admin' ) { %>
+                    <a href="/teacher/create-course"><button>Create Course</button></a>
+                    <% } %>
+                        <% } %>
+                            <a href="/student"><button>Exam</button></a>
+                            <a href="/review"><button>Review</button></a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <h2>Manage User</h2>
+
+        <!-- Search -->
+        <form action="/admin/searchUser" method="GET" class="search-box">
+            <input type="text" name="keyword" placeholder="ค้นหาชื่อผู้ใช้">
+        </form>
+
+
+        <!-- User List -->
+        <% if (users && users.length> 0) { %>
+
+            <% users.forEach(user=> { %>
+
+                <div class="user-row">
+
+                    <div class="user-name">
+                        ผู้เรียน :
+                        <a>
+                            <%= user.username %>
+                        </a>
+                    </div>
+
+                    <div class="btn-group">
+
+                        <!-- แจ้งเตือน -->
+                        <button class="notify-btn">
+                            แจ้งเตือนเนื้อหาใหม่
+                        </button>
+
+                        <!-- Delete -->
+                        <form action="/admin/deleteUser/<%= user.id %>" method="POST">
+                            <button class="delete-btn">
+                                ลบผู้ใช้
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+                <% }) %>
+
+                    <% } else { %>
+
+                        <p>No users found</p>
+
+                        <% } %>
+
+
+                            <div class="update">
+                                <button class="update-btn">อัปเดต</button>
+                            </div>
+
+    </div>
+
+</body>

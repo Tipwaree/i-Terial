@@ -228,6 +228,31 @@ app.get("/teacher", (req, res) => {
   res.redirect("/home"); // เปลี่ยนจาก res.render("home") เป็น res.redirect เพื่อให้ตัวแปร user ทำงานปกติ
 });
 
+// Admin Manage User
+app.get("/admin/manageUser", (req, res) => {
+
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.send("Access denied");
+  }
+
+  db.all(
+    "SELECT * FROM users WHERE role != 'admin'",
+    [],
+    (err, rows) => {
+
+      if (err) {
+        console.log(err);
+        return res.send("Database error");
+      }
+
+      res.render("admin/manageUser", {
+        users: rows,
+        user: req.session.user
+      });
+
+    }
+  );
+});
 // ─── POST ROUTES ─────────────────────────────────────────
 
 // POST Register
