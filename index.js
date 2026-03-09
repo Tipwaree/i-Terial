@@ -369,6 +369,33 @@ app.post("/teacher/create-course", upload.single("image"), (req, res) => {
   );
 });
 
+// Course detail (หน้าดูรายละเอียดคอร์ส และแสดงบทเรียน)
+app.get("/courses/:slug", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  
+  // 1. ดึงข้อมูลคอร์ส
+  coursesDb.get("SELECT * FROM courses WHERE slug=?", [req.params.slug], (err, course) => {
+    if (!course) return res.status(404).send("Course not found");
+    
+    // ข้อมูลจำลอง (Mock) สำหรับ Sidebar
+    course.teacher = "คุณครูผู้สอน";
+    course.students = 0;
+    course.rating = 5.0;
+    course.reviewText = "ยังไม่มีรีวิว";
+    course.progress = 0;
+
+    // 2. ดึงข้อมูลบทเรียน (Lessons) ทั้งหมดที่อยู่ในคอร์สนี้
+    coursesDb.all("SELECT * FROM lessons WHERE course_id=?", [course.id], (err, lessons) => {
+      // ส่งตัวแปร course และ lessons ไปให้หน้า detail.ejs
+      res.render("detail", { 
+        course: course, 
+        lessons: lessons || [], 
+        user: req.session.user 
+      });
+    });
+  });
+});
+
 // ─── START SERVER ─────────────────────────────────────────
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
