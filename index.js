@@ -286,6 +286,74 @@ app.get("/teacher", (req, res) => {
   res.render("teacher/createExam")
 })
 
+//─── NEW FROM EXAM PAGE ─────────────────────────────────────────
+
+// student pages
+app.get("/student", (req, res) => {
+  // เพิ่ม mockExams เพื่อแก้บั๊ก exams is not defined
+  const mockExams = [
+    { id: 1, name: "วิชาเทคโนโลยีสารสนเทศเบื้องต้น" },
+    { id: 2, name: "วิชาการเขียนโปรแกรม (Programming)" },
+    { id: 3, name: "วิชาคณิตศาสตร์คอมพิวเตอร์" }
+  ];
+  res.render("student/examList", { exams: mockExams, user: req.session.user });
+})
+
+app.get("/student/exam", (req, res) => {
+  res.render("student/examPage", { user: req.session.user })
+})
+
+app.get("/student/result", (req, res) => {
+  res.render("student/result", { user: req.session.user })
+})
+
+// teacher exam page (แก้จาก /teacher เป็น /teacher/create-exam เพื่อไม่ให้ชนกับ route ด้านบน)
+app.get("/teacher/create-exam", (req, res) => {
+  res.render("teacher/createExam", { user: req.session.user })
+})
+
+
+// ─── TEACHER PAGES (CREATE COURSE) ────────────────────────────────
+
+// 1. สร้างตาราง courses (หากยังไม่มี) ใน courses.db
+coursesDb.run(`
+  CREATE TABLE IF NOT EXISTS courses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    slug TEXT UNIQUE,
+    description TEXT,
+    image TEXT,
+    teacher_id INTEGER
+  )
+`);
+
+// 2. GET: แสดงหน้าฟอร์มสร้างคอร์สเรียน
+app.get("/teacher/create-course", (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) {
+     return res.send("<script>alert('Unauthorized access: สำหรับ Teacher เท่านั้น'); window.location.href='/home';</script>");
+  }
+  res.render("teacher/createCourse", { user: req.session.user });
+});
+
+// 3. POST: รับข้อมูลจากฟอร์มเพื่อบันทึกลง Database
+app.post("/teacher/create-course", upload.single("image"), (req, res) => {
+  if (!req.session.user || (req.session.user.role !== 'teacher' && req.session.user.role !== 'admin')) {
+     return res.redirect("/login");
+  }
+
+  const { title, description } = req.body;
+  const image = req.file ? req.file.filename : null; 
+  const slug = title.toLowerCase().replace(/[^a-zA-Z0-9ก-๙]+/g, '-').replace(/(^-|-$)+/g, '') || Date.now().toString();
+
+  coursesDb.run(
+    `INSERT INTO courses (title, slug, description, image, teacher_id) VALUES (?, ?, ?, ?, ?)`,
+    [title, slug, description, image, req.session.user.id],
+    function(err) {
+      if (err) return res.send("<script>alert('เกิดข้อผิดพลาดในการสร้างคอร์ส'); window.location.href='/teacher/create-course';</script>");
+      res.send("<script>alert('สร้างคอร์สสำเร็จ!'); window.location.href='/courses';</script>");
+    }
+  );
+});
 
 // ─── START SERVER ─────────────────────────────────────────
 app.listen(port, () => {
