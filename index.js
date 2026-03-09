@@ -14,6 +14,8 @@ app.use(session({
   saveUninitialized: true
 }));
 
+
+// อัปโหลดรูป
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/uploads");
@@ -25,6 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
+//database
 const db = new sqlite3.Database('user.db', (err) => {
   if (err) {
     console.error(err.message);
@@ -41,10 +44,23 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT,
   address TEXT,
   gender TEXT,
+  role TEXT,
   image TEXT
 )
 `);
 
+//สร้าง admin
+db.get("SELECT * FROM users WHERE username=?", ["admin"], (err, row) => {
+  if (!row) {
+    db.run(`
+      INSERT INTO users (username,password,email,role)
+      VALUES (?,?,?,?)
+    `, ["admin","123","admin@mail.com","admin"]);
+    console.log("Admin account created");
+  }
+});
+
+//middleware
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -53,7 +69,7 @@ app.set("view engine", "ejs");
 
 //Route Register
 app.post("/register", (req, res) => {
-  const { username, password, phone, email, address, gender } = req.body;
+  const { username, password, phone, email, address, gender, role } = req.body;
   if (!username || !password || !email) {
     return res.send(`
       <script>
@@ -62,8 +78,7 @@ app.post("/register", (req, res) => {
       </script>
     `);
   }
-  // ตรวจ email ซ้ำ
-  const checkSql = `SELECT * FROM users WHERE email = ?`;
+  const checkSql = `SELECT * FROM users WHERE email=?`;
   db.get(checkSql, [email], (err, row) => {
     if (row) {
       return res.send(`
@@ -74,22 +89,24 @@ app.post("/register", (req, res) => {
       `);
     }
     const insertSql = `
-    INSERT INTO users (username,password,phone,email,address,gender,image)
-    VALUES (?,?,?,?,?,?,?)
+    INSERT INTO users (username,password,phone,email,address,gender,role,image)
+    VALUES (?,?,?,?,?,?,?,?)
     `;
-    db.run(insertSql, [username, password, phone, email, address, gender, null], function (err) {
-      if (err) {
-        console.log(err.message);
-        return res.send("Register failed");
-      }
-      // เก็บ session
-      req.session.user = {
-        id: this.lastID,
-        username,
-        email
-      };
-      res.redirect("/home");
-    });
+    db.run(insertSql,
+      [username, password, phone, email, address, gender, role, null],
+      function(err){
+        if (err) {
+          console.log(err.message);
+          return res.send("Register failed");
+        }
+        req.session.user = {
+          id: this.lastID,
+          username,
+          email,
+          role
+        };
+        res.redirect("/home");
+      });
   });
 });
 
@@ -115,6 +132,8 @@ app.post("/login", (req, res) => {
   });
 });
 
+
+//pages
 app.get("/", (req, res) => {
   res.redirect("/Home");
 });
@@ -148,19 +167,23 @@ app.get("/profile", (req, res) => {
   res.render("Profilepage", { user: req.session.user });
 });
 
+
 //Route เปิดหน้า Edit
 app.get("/profile/edit", (req, res) => {
-  if (!currentUser) {
+  if (!req.session.user) {
     return res.redirect("/login");
   }
-  res.render("EditProfile", { user: currentUser });
+  res.render("EditProfile", { user: req.session.user });
 });
 
 
-//Route Update
+//Route Update profile
 app.post("/profile/update", upload.single("image"), (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
   const { username, phone, email, address, gender } = req.body;
-  let image = currentUser.image;
+  let image = req.session.user.image;
   if (req.file) {
     image = req.file.filename;
   }
@@ -169,19 +192,22 @@ app.post("/profile/update", upload.single("image"), (req, res) => {
   SET username=?, phone=?, email=?, address=?, gender=?, image=?
   WHERE id=?
   `;
-  db.run(sql, [username, phone, email, address, gender, image, currentUser.id], (err) => {
-    if (err) {
-      console.log(err.message);
-      return res.send("Update failed");
-    }
-    currentUser.username = username;
-    currentUser.phone = phone;
-    currentUser.email = email;
-    currentUser.address = address;
-    currentUser.gender = gender;
-    currentUser.image = image;
-    res.redirect("/profile");
-  });
+  db.run(sql,
+    [username, phone, email, address, gender, image, req.session.user.id],
+    (err) => {
+      if (err) {
+        console.log(err.message);
+        return res.send("Update failed");
+      }
+      req.session.user.username = username;
+      req.session.user.phone = phone;
+      req.session.user.email = email;
+      req.session.user.address = address;
+      req.session.user.gender = gender;
+      req.session.user.image = image;
+
+      res.redirect("/profile");
+    });
 });
 
 //route เปิด server
