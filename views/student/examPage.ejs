@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const form = document.querySelector("form")
+
+            form.addEventListener("submit", function (e) {
+
+                const questions = document.querySelectorAll(".question")
+                let unanswered = []
+
+                questions.forEach(q => {
+
+                    const checked = q.querySelector("input[type='radio']:checked")
+
+                    if (!checked) {
+                        unanswered.push(q)
+                        q.classList.add("unanswered")
+                    } else {
+                        q.classList.remove("unanswered")
+                    }
+
+                })
+
+                if (unanswered.length > 0) {
+
+                    e.preventDefault()
+
+                    unanswered[0].scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    })
+
+                    if (confirm("ยังมีคำถามที่ไม่ได้ตอบ " + unanswered.length + " ข้อ\n\nต้องการส่งคำตอบของท่านหรือไม่?")) {
+                        form.submit()
+                    }
+
+                }
+
+            })
+
+        })
+    </script>
+
+</head>
+
+<body>
+
+    <%- include('../partials/navbar') %>
+
+        <div class="exam-container">
+
+            <% if(questions && questions.length> 0){ %>
+
+                <form action="/student/submit" method="POST">
+
+                    <input type="hidden" name="subject_id" value="<%= questions[0].subject_id %>">
+
+                    <% questions.forEach(q=> { %>
+
+                        <div class="question">
+
+                            <p><b>
+                                    <%= q.question %>
+                                </b></p>
+
+
+                            <!-- ก -->
+                            <label class="
+                            <% if(answers && parseInt(answers[q.id]) === 1 && q.answer != 1){ %> wrong <% } %>
+                            <% if(answers && q.answer == 1){ %> correct <% } %>
+                            ">
+
+                                <input type="radio" name="q<%= q.id %>" value="1" <%=answers &&
+                                    parseInt(answers[q.id])===1 ? "checked" : "" %>
+                                >
+
+                                ก. <%= q.choice1 %>
+
+                            </label>
+
+
+                            <!-- ข -->
+                            <label class="
+                            <% if(answers && parseInt(answers[q.id]) === 2 && q.answer != 2){ %> wrong <% } %>
+                            <% if(answers && q.answer == 2){ %> correct <% } %>
+                            ">
+
+                                <input type="radio" name="q<%= q.id %>" value="2" <%=answers &&
+                                    parseInt(answers[q.id])===2 ? "checked" : "" %>
+                                >
+
+                                ข. <%= q.choice2 %>
+
+                            </label>
+
+
+                            <!-- ค -->
+                            <label class="
+                            <% if(answers && parseInt(answers[q.id]) === 3 && q.answer != 3){ %> wrong <% } %>
+                            <% if(answers && q.answer == 3){ %> correct <% } %>
+                            ">
+
+                                <input type="radio" name="q<%= q.id %>" value="3" <%=answers &&
+                                    parseInt(answers[q.id])===3 ? "checked" : "" %>
+                                >
+
+                                ค. <%= q.choice3 %>
+
+                            </label>
+
+
+                            <!-- ง -->
+                            <label class="
+                            <% if(answers && parseInt(answers[q.id]) === 4 && q.answer != 4){ %> wrong <% } %>
+                            <% if(answers && q.answer == 4){ %> correct <% } %>
+                            ">
+
+                                <input type="radio" name="q<%= q.id %>" value="4" <%=answers &&
+                                    parseInt(answers[q.id])===4 ? "checked" : "" %>
+                                >
+
+                                ง. <%= q.choice4 %>
+
+                            </label>
+
+                            <hr>
+
+                        </div>
+
+                        <% }) %>
+
+                            <button type="submit">ส่งคำตอบ</button>
+
+                </form>
+
+                <% } else { %>
+
+                    <h3 style="margin-top:40px;color:#666;">
+                        ยังไม่มีข้อสอบในวิชานี้
+                    </h3>
+
+                    <% } %>
+
+        </div>
+
+</body>
+
+</html>

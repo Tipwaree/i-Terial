@@ -197,3 +197,30 @@ app.post("/profile/update", upload.single("image"), (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
+
+//─── NEW FROM EXAM PAGE ─────────────────────────────────────────
+
+const studentRoutes = require("./routes/student")
+const teacherRoutes = require("./routes/teacher")
+
+app.set("view engine", "ejs")
+app.set("views", path.join(__dirname, "views"))
+
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+
+app.use(express.static("public"))
+const session = require("express-session")
+
+app.use(session({
+    secret: "exam-secret",
+    resave: false,
+    saveUninitialized: true
+}))
+
+app.use("/student", studentRoutes)
+app.use("/teacher", teacherRoutes)
+
+app.get("/", (req, res) => {
+  res.redirect("/student")
+})

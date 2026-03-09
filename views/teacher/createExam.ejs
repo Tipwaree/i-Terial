@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
+
+    <script>
+
+        function addQuestion() {
+            const container = document.getElementById("question-container")
+            const count = container.querySelectorAll(".question-block").length + 1
+
+            const html = `
+            <div class="question-block">
+                <div class="question-header">
+                    <h4>คำถามข้อที่ ${count}</h4>
+                    <button type="button" class="delete-btn" onclick="deleteQuestion(this)">ลบ</button>
+                </div>
+
+                <input type="text" name="question[]" placeholder="คำถาม">
+
+                <div class="choice-row">
+                    <span class="choice-label">ก.</span>
+                    <input type="text" name="choice1[]" placeholder="ตัวเลือกที่ 1">
+                </div>
+
+                <div class="choice-row">
+                    <span class="choice-label">ข.</span>
+                    <input type="text" name="choice2[]" placeholder="ตัวเลือกที่ 2">
+                </div>
+
+                <div class="choice-row">
+                    <span class="choice-label">ค.</span>
+                    <input type="text" name="choice3[]" placeholder="ตัวเลือกที่ 3">
+                </div>
+
+                <div class="choice-row">
+                    <span class="choice-label">ง.</span>
+                    <input type="text" name="choice4[]" placeholder="ตัวเลือกที่ 4">
+                </div>
+
+                <div class="answer-row">
+                    <label for="">เฉลย :</label>
+                    <select name="answer[]">
+                        <option value="1">ก.</option>
+                        <option value="2">ข.</option>
+                        <option value="3">ค.</option>
+                        <option value="4">ง.</option>
+                    </select>
+                </div>
+
+                <hr>
+            </div>
+        `
+
+            container.insertAdjacentHTML("beforeend", html)
+        }
+
+        function deleteQuestion(button) {
+
+            const block = button.closest(".question-block")
+            block.remove()
+
+            updateQuestionNumbers()
+        }
+
+        function updateQuestionNumbers() {
+
+            const questions = document.querySelectorAll(".question-block h4")
+
+            questions.forEach((q, index) => {
+                q.textContent = "คำถามข้อที่ " + (index + 1)
+            })
+        }
+
+        window.onload = function () {
+
+            const params = new URLSearchParams(window.location.search)
+
+            if (params.get("saved") === "1") {
+                alert("✅ บันทึกสำเร็จ")
+            }
+
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+    <%- include('../partials/navbar') %>
+
+        <div class="container">
+
+            <h2>Create Exam วิชา : <%= exam ? exam.name : "Unknown Subject" %>
+            </h2>
+            <p>ผู้สอน : แพทย์หญิง จันทพร</p>
+
+            <button type="button" class="add-btn" onclick="addQuestion()">เพิ่มคำถาม</button>
+
+            <form action="/teacher/saveExam" method="POST">
+
+                <input type="hidden" name="subject_id" value="<%= subject_id %>">
+
+                <div id="question-container">
+
+                    <% if(questions && questions.length> 0){ %>
+
+                        <% questions.forEach((q,index)=>{ %>
+
+                            <div class="question-block">
+
+                                <div class="question-header">
+                                    <h4>คำถามข้อที่ <%= index+1 %>
+                                    </h4>
+                                    <button type="button" class="delete-btn" onclick="deleteQuestion(this)">ลบ</button>
+                                </div>
+
+                                <input name="question[]" value="<%= q.question %>" placeholder="คำถาม">
+
+                                <div class="choice-row">
+                                    <span>ก.</span>
+                                    <input name="choice1[]" value="<%= q.choice1 %>" placeholder="ตัวเลือกที่ 1">
+                                </div>
+
+                                <div class="choice-row">
+                                    <span>ข.</span>
+                                    <input name="choice2[]" value="<%= q.choice2 %>" placeholder="ตัวเลือกที่ 2">
+                                </div>
+
+                                <div class="choice-row">
+                                    <span>ค.</span>
+                                    <input name="choice3[]" value="<%= q.choice3 %>" placeholder="ตัวเลือกที่ 3">
+                                </div>
+
+                                <div class="choice-row">
+                                    <span>ง.</span>
+                                    <input name="choice4[]" value="<%= q.choice4 %>" placeholder="ตัวเลือกที่ 4">
+                                </div>
+
+                                <div class="answer-row">
+
+                                    <label>เฉลย :</label>
+
+                                    <select name="answer[]">
+
+                                        <option value="1" <%=q.answer==1 ? "selected" : "" %>>ก.</option>
+                                        <option value="2" <%=q.answer==2 ? "selected" : "" %>>ข.</option>
+                                        <option value="3" <%=q.answer==3 ? "selected" : "" %>>ค.</option>
+                                        <option value="4" <%=q.answer==4 ? "selected" : "" %>>ง.</option>
+
+                                    </select>
+
+                                </div>
+
+                                <hr>
+
+                            </div>
+
+                            <% }) %>
+
+                                <% } %>
+
+                </div>
+
+                <button type="submit" class="submit-btn">บันทึก</button>
+
+            </form>
+
+        </div>
+
+</body>
+
+</html>
