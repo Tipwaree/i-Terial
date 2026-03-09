@@ -66,7 +66,7 @@ app.use(express.json());
 app.set("view engine", "ejs");
 
 
-// ─── ROUTES ──────────────────────────────────────────────
+// ─── ROUTES 
 
 app.get("/", (req, res) => {
   res.redirect("/home");
@@ -80,6 +80,11 @@ app.get("/home", (req, res) => {
 // Login page
 app.get("/login", (req, res) => {
   res.render("Loginpage");
+});
+
+//forgot page
+app.get("/forgot", (req, res) => {
+  res.render("ForgotPassword");
 });
 
 // Register page
@@ -192,35 +197,62 @@ app.post("/profile/update", upload.single("image"), (req, res) => {
 });
 
 
-// ─── START SERVER ─────────────────────────────────────────
+// forgotpage
+app.post("/forgot", (req, res) => {
+  const { login, newpassword } = req.body;
+  db.get(
+    "SELECT * FROM users WHERE username=? OR email=?",
+    [login, login],
+    (err, row) => {
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+      if (!row) {
+        return res.send(`<script>
+        alert("User not found");
+        window.location.href="/forgot";
+        </script>`);
+      }
+      db.run(
+        "UPDATE users SET password=? WHERE id=?",
+        [newpassword, row.id],
+        (err) => {
+
+          if (err) return res.send("Error resetting password");
+
+          res.send(`<script>
+          alert("Password reset success");
+          window.location.href="/login";
+          </script>`);
+        }
+      );
+
+    }
+  );
 });
+
 
 //─── NEW FROM EXAM PAGE ─────────────────────────────────────────
 
-const studentRoutes = require("./routes/student")
-const teacherRoutes = require("./routes/teacher")
+const studentRoutes = require("/student")
+const teacherRoutes = require("/teacher")
 
-app.set("view engine", "ejs")
-app.set("views", path.join(__dirname, "views"))
+// app.set("view engine", "ejs")
+// app.set("views", path.join(__dirname, "views"))
 
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
-
-app.use(express.static("public"))
-const session = require("express-session")
-
-app.use(session({
-    secret: "exam-secret",
-    resave: false,
-    saveUninitialized: true
-}))
+// app.use(session({
+//     secret: "exam-secret",
+//     resave: false,
+//     saveUninitialized: true
+// }))
 
 app.use("/student", studentRoutes)
 app.use("/teacher", teacherRoutes)
 
-app.get("/", (req, res) => {
-  res.redirect("/student")
-})
+// app.get("/", (req, res) => {
+//   res.redirect("/student")
+// })
+
+
+// ─── START SERVER ─────────────────────────────────────────
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});

@@ -144,6 +144,23 @@ a.nav-btn:hover {
     margin-top: 20px;
 }
 
+.forgot{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.forgot{
+    margin-top:10px;
+    text-align:center;
+}
+
+.forgot a{
+    color:#333;
+    text-decoration:none;
+    font-size:14px;
+}
+
 .submitbutton button {
     border-radius: 10px;
     color: rgba(32, 161, 25, 0.705);
