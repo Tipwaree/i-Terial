@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
 )
 `);
 
+
 // สร้าง admin
 db.get("SELECT * FROM users WHERE username=?", ["admin"], (err, row) => {
   if (!row) {
@@ -63,21 +64,29 @@ db.get("SELECT * FROM users WHERE username=?", ["teacher"], (err, row) => {
 });
 
 // courses database
+// courses database
 const coursesDb = new sqlite3.Database('courses.db', (err) => {
   if (err) console.error(err.message);
   console.log("Connected to courses database");
 });
 
-// สร้างตาราง courses (หากยังไม่มี)
 coursesDb.run(`
-  CREATE TABLE IF NOT EXISTS courses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT,
-    slug TEXT UNIQUE,
-    description TEXT,
-    image TEXT,
-    teacher_id INTEGER
-  )
+CREATE TABLE IF NOT EXISTS courses (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT,
+  slug TEXT UNIQUE,
+  description TEXT,
+  image TEXT,
+  teacher_id INTEGER
+)
+`);
+
+coursesDb.run(`
+CREATE TABLE IF NOT EXISTS bookmarks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  course_id INTEGER
+)
 `);
 
 // middleware
@@ -123,8 +132,46 @@ app.get("/logout", (req, res) => {
 // Profile
 app.get("/profile", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
-  res.render("Profilepage", { user: req.session.user });
+  const userId = req.session.user.id;
+  coursesDb.all(
+    `SELECT courses.* FROM bookmarks 
+     JOIN courses ON bookmarks.course_id = courses.id
+     WHERE bookmarks.user_id=?`,
+    [userId],
+    (err, courses) => {
+      if (err) courses = [];
+      res.render("Profilepage", {
+        user: req.session.user,
+        courses: courses
+      });
+    }
+  );
 });
+
+//bookmark
+app.post("/bookmark/:id", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  const userId = req.session.user.id;
+  const courseId = req.params.id;
+  coursesDb.get(
+    "SELECT * FROM bookmarks WHERE user_id=? AND course_id=?",
+    [userId, courseId],
+    (err, row) => {
+      if (row) {
+        return res.redirect("/courses");
+      }
+      coursesDb.run(
+        "INSERT INTO bookmarks (user_id, course_id) VALUES (?,?)",
+        [userId, courseId],
+        () => {
+          res.redirect("/courses");
+        }
+      );
+    }
+  );
+});
+
+
 
 // Edit profile
 app.get("/profile/edit", (req, res) => {

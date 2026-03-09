@@ -276,6 +276,18 @@ a.nav-btn:hover {
     opacity: 0.9;
 }
 
+
+.course-card{
+    position: relative;
+}
+
+.bookmark-star{
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 22px;
+}
+
 /* ===== EDIT PROFILE PAGE ===== */
 .formedit {
     display: flex;
@@ -375,6 +387,13 @@ a.nav-btn:hover {
     color: white;
     padding: 10px 15px;
     font-size: 20px;
+}
+
+
+/* bookmark */
+.bookmark {
+    background-color: #1e7f1a;
+    width: 400px;
 }
 
 /* ===== DETAIL PAGE ===== */

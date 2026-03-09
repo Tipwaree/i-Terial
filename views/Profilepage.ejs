@@ -76,10 +76,13 @@
     </div>
 
 </div>
+
+<div class="bookmark">
     <h1>Bookmark</h1>
         <div class="container">
         <h1>Course</h1>
         <div class="course-grid">
+            <% if (courses && courses.length > 0) { %>
             <% courses.forEach(course=> { %>
                 <a href="/courses/<%= course.slug %>" style="text-decoration:none;">
                     <div class="course-card">
@@ -89,8 +92,22 @@
                         </div>
                     </div>
                 </a>
-                <% }); %>
+                <% }) %>
+                <% } else { %>
+                <p>No bookmarks yet</p>
+                <% } %>
+                <div class="course-card bookmarked">
+                    <img src="<%= course.image %>" alt="<%= course.title %>">
+
+                    <div class="course-title">
+                        <%= course.title %>
+                    </div>
+                     <div class="bookmark-star">⭐</div>
+
+</div>
         </div>
     </div>
+
+</div>
 </body>
 </html>
