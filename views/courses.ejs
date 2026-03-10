@@ -41,6 +41,14 @@
                             <%= course.title %>
                         </div>
                     </a>
+                    <!-- admin delete button -->
+                    <% if(user.role === "admin"){ %>
+                        <form action="/admin/deleteCourse/<%= course.id %>" method="POST"
+                            onsubmit="return confirm('ลบคอร์ส <%= course.title.replace(/'/g, "\\'") %>?')"
+                            style="padding: 0 12px 12px; text-align:center;">
+                            <button type="submit" class="btn btn-danger" style="width:100%; font-size:13px;">🗑 ลบคอร์ส</button>
+                        </form>
+                    <% } %>
                 </div>
             <% }); %>
         </div>

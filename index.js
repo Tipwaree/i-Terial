@@ -486,6 +486,16 @@ app.get("/admin/searchUser", (req, res) => {
   );
 });
 
+// Admin Delete Course
+app.post("/admin/deleteCourse/:id", (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") {
+    return res.redirect("/login");
+  }
+  coursesDb.run("DELETE FROM courses WHERE id=?", [req.params.id], () => {
+    res.redirect("/courses");
+  });
+});
+
 // Admin Delete User
 app.post("/admin/deleteUser/:id", (req, res) => {
   if (!req.session.user || req.session.user.role !== "admin") {
