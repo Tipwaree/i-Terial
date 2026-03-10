@@ -4,85 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>i-Terial - <%= course.title %>
-    </title>
+    <title>i-Terial - <%= course.title %></title>
     <link rel="stylesheet" href="/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-    <div class="bigcontainer">
-        <div class="logo">
-            <h1>i-Terial</h1>
-        </div>
-        <div class="buttongroup">
-            <a href="/home"><button>Home</button></a>
-            <a href="/courses"><button>Search</button></a>
-
-            <% if (typeof user !=='undefined' && user) { %>
-                <a href="/profile"><button>Profile</button></a>
-                <% if (user.role==='teacher' || user.role==='admin' ) { %>
-                    <a href="/teacher/create-course"><button>Create Course</button></a>
-                    <% } %>
-                        <% } %>
-
-                            <a href="/student"><button>Exam</button></a>
-                            <a href="/review"><button>Review</button></a>
-        </div>
-    </div>
+    <%- include('partials/navbar-' + user.role, { user: user }) %>
 
     <div class="container">
         <div class="detail-layout">
 
             <div class="sidebar">
                 <div class="course-card">
+                    <% if (course.image) { %>
                     <img src="/uploads/<%= course.image %>" alt="<%= course.title %>" class="detail-course-img">
-                    <div class="detail-course-title">
-                        <%= course.title %>
-                    </div>
+                    <% } else { %>
+                    <div style="height:160px;background:#c5b99a;display:flex;align-items:center;justify-content:center;border-radius:8px;color:#555;font-size:14px;text-align:center;padding:10px;"><%= course.title %></div>
+                    <% } %>
+                    <div class="detail-course-title"><%= course.title %></div>
                 </div>
 
-                <div style="margin: 20px 0;">
-                    <button class="btn-bookmark">Bookmark</button>
-                    <button class="btn-enroll">Enroll</button>
+                <div style="margin: 20px 0; display:flex; gap:10px; flex-wrap:wrap;">
+                    <% if (user.role === 'student') { %>
+                        <form action="/bookmark/<%= course.id %>" method="POST" style="display:inline;">
+                            <button class="btn-bookmark">⭐ Bookmark</button>
+                        </form>
+                        <form action="/enroll/<%= course.id %>" method="POST" style="display:inline;">
+                            <button class="btn-enroll">
+                                <%= isEnrolled ? '✅ Unenroll' : '📚 Enroll' %>
+                            </button>
+                        </form>
+                    <% } %>
                 </div>
 
                 <div class="detail-sidebar-info">
-                    <p><strong>ผู้สอน :</strong>
-                        <%= course.teacher %>
-                    </p>
-                    <p><strong>จำนวนผู้เรียน :</strong>
-                        <%= course.students %> คน
-                    </p>
-                    <p><strong>คะแนน :</strong>
-                        <%= course.rating %> / 5.0
-                    </p>
-                    <p><strong>รีวิว :</strong>
-                        <%= course.reviewText %>
-                    </p>
-                    <p><strong>บันทึกการเรียน :</strong>
-                        <%= course.progress %>%
-                    </p>
+                    <p><strong>ผู้สอน :</strong> <%= course.teacher %></p>
+                    <p><strong>จำนวนผู้เรียน :</strong> <%= course.students %> คน</p>
+                    <p><strong>คะแนน :</strong> <%= course.rating %> / 5.0</p>
                 </div>
             </div>
 
             <div class="main-content">
 
+                <a href="/courses" style="display:inline-block; margin-bottom:16px;">
+                    <button class="btn-secondary" style="font-size:14px; padding:7px 16px;">← กลับไปหน้าคอร์ส</button>
+                </a>
+
                 <div class="detail-content-box">
-                    <h2 class="detail-main-title">
-                        <%= course.title %>
-                    </h2>
-                    <p class="detail-description">
-                        <%= course.description %>
-                    </p>
+                    <h2 class="detail-main-title"><%= course.title %></h2>
+                    <p class="detail-description"><%= course.description %></p>
                 </div>
 
-                <% if (typeof user !=='undefined' && user && (user.role==='admin' || user.role==='teacher' )) { %>
+                <% if (user.role === 'admin' || user.role === 'teacher') { %>
                     <div class="teacher-menu">
                         <h4 class="teacher-menu-title">เมนูจัดการคอร์ส (สำหรับผู้สอน)</h4>
                         <a href="/teacher/edit-course/<%= course.id %>">
@@ -91,58 +68,73 @@
                         <a href="/teacher/manage-lessons/<%= course.id %>">
                             <button class="btn-teacher btn-manage-lessons">เพิ่ม/ลบบทเรียน</button>
                         </a>
+                        <a href="/review?course=<%= course.id %>">
+                            <button class="btn-teacher">📝 อ่านรีวิว</button>
+                        </a>
                     </div>
-                    <% } %>
+                <% } %>
 
-                        <div class="lesson-section">
-                            <h3 class="lesson-section-title">
-                                เนื้อหาบทเรียนทั้งหมด (<%= lessons ? lessons.length : 0 %> บท)
-                            </h3>
+                <% if (user.role === 'student' && isEnrolled) { %>
+                    <div style="margin: 10px 0;">
+                        <a href="/review?course=<%= course.id %>">
+                            <button class="btn-teacher">📝 ดู/เขียน Review</button>
+                        </a>
+                    </div>
+                <% } %>
 
-                            <% if (!lessons || lessons.length===0) { %>
-                                <div class="lesson-empty">
-                                    <p>ยังไม่มีบทเรียนในคอร์สนี้</p>
-                                    <p style="font-size: 14px;">(ผู้สอนสามารถกดปุ่ม "เพิ่ม/ลบบบทเรียน"
-                                        ด้านบนเพื่อเพิ่มเนื้อหาได้เลย)</p>
-                                </div>
-                                <% } else { %>
-                                    <div class="lesson-list-container">
-                                        <% lessons.forEach((lesson, index)=> { %>
-                                            <div class="lesson-row">
+                <div class="lesson-section">
+                    <h3 class="lesson-section-title">
+                        เนื้อหาบทเรียนทั้งหมด (<%= lessons ? lessons.length : 0 %> บท)
+                    </h3>
 
-                                                <div class="lesson-name">
-                                                    บทที่ <%= index + 1 %>: <%= lesson.title %>
-                                                </div>
-
-                                                <div class="lesson-actions">
-                                                    <% if (lesson.pdf_file) { %>
-                                                        <a href="/uploads/<%= lesson.pdf_file %>" target="_blank">
-                                                            <button class="btn-lesson btn-pdf">📄 เอกสาร PDF</button>
-                                                        </a>
-                                                        <% } %>
-
-                                                            <% if (lesson.video_file) { %>
-                                                                <a href="/uploads/<%= lesson.video_file %>"
-                                                                    target="_blank">
-                                                                    <button class="btn-lesson btn-video">🎬
-                                                                        วิดีโอเรียน</button>
-                                                                </a>
-                                                                <% } %>
-
-                                                                    <% if (!lesson.pdf_file && !lesson.video_file) { %>
-                                                                        <span
-                                                                            class="lesson-no-file">(ไม่มีไฟล์แนบ)</span>
-                                                                        <% } %>
-                                                </div>
-                                            </div>
-                                            <% }); %>
-                                    </div>
-                                    <% } %>
+                    <% if (!isEnrolled && user.role === 'student') { %>
+                        <div class="lesson-empty">
+                            <p>🔒 กรุณา Enroll คอร์สนี้ก่อนเพื่อดูเนื้อหา</p>
                         </div>
+                    <% } else if (!lessons || lessons.length === 0) { %>
+                        <div class="lesson-empty">
+                            <p>ยังไม่มีบทเรียนในคอร์สนี้</p>
+                            <% if (user.role === 'teacher' || user.role === 'admin') { %>
+                                <p style="font-size: 14px;">(ผู้สอนสามารถกดปุ่ม "เพิ่ม/ลบบทเรียน" ด้านบนได้เลย)</p>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <div class="lesson-list-container">
+                            <% lessons.forEach((lesson, index) => { %>
+                                <div class="lesson-row">
+                                    <div class="lesson-name">
+                                        บทที่ <%= index + 1 %>: <%= lesson.title %>
+                                    </div>
+                                    <div class="lesson-actions">
+                                        <% if (lesson.pdf_file) { %>
+                                            <a href="/uploads/<%= lesson.pdf_file %>" target="_blank">
+                                                <button class="btn-lesson btn-pdf">📄 เอกสาร PDF</button>
+                                            </a>
+                                        <% } %>
+                                        <% if (lesson.video_file) { %>
+                                            <a href="/uploads/<%= lesson.video_file %>" target="_blank">
+                                                <button class="btn-lesson btn-video">🎬 วิดีโอเรียน</button>
+                                            </a>
+                                        <% } %>
+                                        <% if (!lesson.pdf_file && !lesson.video_file) { %>
+                                            <span class="lesson-no-file">(ไม่มีไฟล์แนบ)</span>
+                                        <% } %>
+                                        <% if (user.role === 'teacher' || user.role === 'admin') { %>
+                                            <form action="/teacher/delete-lesson/<%= lesson.id %>" method="POST" style="display:inline;">
+                                                <input type="hidden" name="course_id" value="<%= course.id %>">
+                                                <button class="btn-lesson" style="background:#c0392b; color:white;" onclick="return confirm('ลบบทเรียนนี้?')">🗑 ลบ</button>
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+
             </div>
         </div>
     </div>
 
 </body>
-
 </html>

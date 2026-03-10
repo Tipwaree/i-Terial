@@ -11,23 +11,7 @@
 </head>
 <body>
 
-    <div class="bigcontainer">
-        <div class="logo">
-            <h1>i-Terial</h1>
-        </div>
-        <div class="buttongroup">
-            <a href="/home"><button>Home</button></a>
-            <a href="/courses"><button>Search</button></a>
-            <% if (user) { %>
-                <a href="/profile"><button>Profile</button></a>
-                <% if (user.role === 'teacher' || user.role === 'admin') { %>
-                    <a href="/teacher/create-course"><button>Create Course</button></a>
-                <% } %>
-            <% } %>
-            <a href="/student"><button>Exam</button></a>
-            <a href="/review"><button>Review</button></a>
-        </div>
-    </div>
+    <%- include('../partials/navbar-' + user.role, { user: user }) %>
 
     <div class="lesson-container">
         <h2>จัดการบทเรียน: <%= course.title %></h2>
@@ -58,19 +42,25 @@
                 <p style="color: #888;">ยังไม่มีบทเรียนในคอร์สนี้</p>
             <% } else { %>
                 <% lessons.forEach((lesson, index) => { %>
-                    <div class="lesson-item">
-                        <h4 style="margin: 0 0 10px 0;"><%= index + 1 %>. <%= lesson.title %></h4>
+                    <div class="lesson-item" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                         <div>
-                            <% if (lesson.pdf_file) { %>
-                                <a href="/uploads/<%= lesson.pdf_file %>" target="_blank" class="btn btn-secondary" style="font-size: 12px; margin-right: 5px;">📄 ดู PDF</a>
-                            <% } %>
-                            <% if (lesson.video_file) { %>
-                                <a href="/uploads/<%= lesson.video_file %>" target="_blank" class="btn btn-secondary" style="font-size: 12px;">🎬 ดูวิดีโอ</a>
-                            <% } %>
-                            <% if (!lesson.pdf_file && !lesson.video_file) { %>
-                                <span style="font-size: 12px; color: #888;">(ไม่มีไฟล์แนบ)</span>
-                            <% } %>
+                            <h4 style="margin: 0 0 6px 0;"><%= index + 1 %>. <%= lesson.title %></h4>
+                            <div>
+                                <% if (lesson.pdf_file) { %>
+                                    <a href="/uploads/<%= lesson.pdf_file %>" target="_blank" class="btn btn-secondary" style="font-size: 12px; margin-right: 5px;">📄 ดู PDF</a>
+                                <% } %>
+                                <% if (lesson.video_file) { %>
+                                    <a href="/uploads/<%= lesson.video_file %>" target="_blank" class="btn btn-secondary" style="font-size: 12px;">🎬 ดูวิดีโอ</a>
+                                <% } %>
+                                <% if (!lesson.pdf_file && !lesson.video_file) { %>
+                                    <span style="font-size: 12px; color: #888;">(ไม่มีไฟล์แนบ)</span>
+                                <% } %>
+                            </div>
                         </div>
+                        <form action="/teacher/delete-lesson/<%= lesson.id %>" method="POST" style="display:inline;" onsubmit="return confirm('ลบบทเรียน <%= lesson.title %>?')">
+                            <input type="hidden" name="course_id" value="<%= course.id %>">
+                            <button type="submit" style="background:#c0392b;color:white;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit;">🗑 ลบ</button>
+                        </form>
                     </div>
                 <% }); %>
             <% } %>

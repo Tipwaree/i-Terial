@@ -11,29 +11,7 @@
 </head>
 <body>
 
-    <div class="bigcontainer">
-        <div class="logo">
-            <h1>i-Terial</h1>
-        </div>
-        <div class="buttongroup">
-            <a href="/home"><button>Home</button></a>
-            <a href="/courses"><button>Search</button></a>
-            <% if (user) { %>
-                <a href="/profile"><button>Profile</button></a>
-                <% if (user.role === 'teacher' || user.role === 'admin') { %>
-                    <a href="/teacher/create-course"><button>Create Course</button></a>
-                <% } %>
-            <% } %>
-            <% if (user && user.role === "admin") { %>
-                <a href="/admin/manageUser"><button>User</button></a>
-            <% } else if (user && user.role === "teacher") { %>
-                <a href="/teacher/exams"><button>Create Exam</button></a>
-            <% } else { %>
-                <a href="/exam"><button>Exam</button></a>
-            <% } %>
-            <a href="/review"><button>Review</button></a>
-        </div>
-    </div>
+    <%- include('partials/navbar-' + (user ? user.role : 'guest'), { user: user || {} }) %>
 
     <div class="smallcontainer">
         <h1>i-Terial</h1>
@@ -43,7 +21,7 @@
                 <a href="/courses"><button>ดูคอร์สทั้งหมด</button></a>
                 
                 <% if (user.role === 'teacher' || user.role === 'admin') { %>
-                    <a href="/teacher/create-course"><button style="background-color: #4CAF50; color: white;">สร้างคอร์สใหม่</button></a>
+                    <a href="/teacher/create-course"><button>สร้างคอร์สใหม่</button></a>
                 <% } %>
                 
                 <a href="/logout"><button>Logout</button></a>
