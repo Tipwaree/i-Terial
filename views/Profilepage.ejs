@@ -39,7 +39,7 @@
                     <label><%= user.email %></label>
 
                     <p>Phone</p>
-                    <label><%= user.phone %></label>
+                    <label><%= user.phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3") %></label>
 
                     <p>Address</p>
                     <label><%= user.address %></label>
