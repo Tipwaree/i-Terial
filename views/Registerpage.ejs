@@ -25,8 +25,16 @@
             <p>Password:</p>
             <input type="password" name="password">
 
+            
             <p>Phone:</p>
-            <input type="text" name="phone">
+            <input 
+                type="text" 
+                name="phone" 
+                placeholder="099-565-7777"
+                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                title="Phone number format: 099-565-7777"
+                required
+            >
 
             <p>Email:</p>
             <input type="email" name="email">

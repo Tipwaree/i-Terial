@@ -524,8 +524,16 @@ app.post("/admin/changeRole/:id", (req, res) => {
 // ─── POST ROUTES ─────────────────────────────────────────
 
 // POST Register
+// POST Register
 app.post("/register", (req, res) => {
   const { username, password, phone, email, address, gender } = req.body;
+  const phoneRegex = /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
+  if (!phoneRegex.test(phone)) {
+    return res.send(`<script>
+    alert("Phone format must be 099-565-7777");
+    window.location.href="/register";
+    </script>`);
+  }
   const role = "student";
   db.get(`SELECT * FROM users WHERE email=?`, [email], (err, row) => {
     if (row) {
