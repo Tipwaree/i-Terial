@@ -239,29 +239,45 @@ app.get("/admin/manageUser", (req, res) => {
     }
   );
 });
+
+
+
+
+
 // ─── POST ROUTES ─────────────────────────────────────────
 
 // POST Register
 app.post("/register", (req, res) => {
-  const { username, password, phone, email, address, gender, role } = req.body;
-  if (!username || !password || !email) {
-    return res.send(`<script>alert("Please fill Username, Email and Password"); window.location.href="/register";</script>`);
-  }
+  const { username, password, phone, email, address, gender } = req.body;
+  const role = "student";
   db.get(`SELECT * FROM users WHERE email=?`, [email], (err, row) => {
     if (row) {
-      return res.send(`<script>alert("This email is already registered"); window.location.href="/register";</script>`);
+      return res.send(`<script>alert("Email already used"); window.location.href="/register";</script>`);
     }
     db.run(
-      `INSERT INTO users (username,password,phone,email,address,gender,role,image) VALUES (?,?,?,?,?,?,?,?)`,
+      `INSERT INTO users (username,password,phone,email,address,gender,role,image)
+       VALUES (?,?,?,?,?,?,?,?)`,
       [username, password, phone, email, address, gender, role, null],
       function (err) {
         if (err) return res.send("Register failed");
-        req.session.user = { id: this.lastID, username, email, role };
+        req.session.user = {
+          id: this.lastID,
+          username,
+          phone,
+          email,
+          address,
+          gender,
+          role,
+          image: null
+        };
         res.redirect("/home");
       }
     );
   });
 });
+
+
+
 
 // POST Login
 app.post("/login", (req, res) => {

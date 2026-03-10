@@ -278,6 +278,12 @@ a.nav-btn:hover {
     opacity: 0.9;
 }
 
+h3{
+    margin-left: 20px;
+    color: #1e7f1a;
+    font-size: 30px;
+}
+
 
 .course-card {
     position: relative;
