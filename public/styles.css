@@ -369,12 +369,8 @@ h3 {
 .formedit h1 {
     color: aliceblue;
     font-size: 40px;
-    padding: 40px 44px;
     border-radius: var(--radius);
-    width: 380px;
-    box-shadow: var(--shadow);
-    font-size: 30px;
-    margin-bottom: 20px;
+    font-size: 25px;
 }
 
 
