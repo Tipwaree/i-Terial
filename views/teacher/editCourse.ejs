@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,82 +7,65 @@
     <link rel="stylesheet" href="/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <style>
+        .file-label {
+            display: block;
+            background: rgba(255,255,255,0.92);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 14px;
+        }
+        .file-label input[type="file"] { display: none; }
+        #edit-file-name { font-style: italic; color: #888; margin-left: 6px; }
+    </style>
 </head>
-
 <body>
 
-    <div class="bigcontainer">
-        <div class="logo">
-            <h1>i-Terial</h1>
-        </div>
-        <div class="buttongroup">
-            <a href="/home"><button>Home</button></a>
-            <a href="/courses"><button>Search</button></a>
-            <% if (user) { %>
-                <a href="/profile"><button>Profile</button></a>
-                <% if (user.role==='teacher' || user.role==='admin' ) { %>
-                    <a href="/teacher/create-course"><button>Create Course</button></a>
-                    <% } %>
-                        <% } %>
-                            <a href="/student"><button>Exam</button></a>
-                            <a href="/review"><button>Review</button></a>
-        </div>
-    </div>
+    <%- include('../partials/navbar-' + user.role, { user: user }) %>
 
-    <div class="container">
-        <div style="max-width: 600px; margin: 40px auto;">
-            <h2>⚙️ แก้ไขรายละเอียดคอร์ส</h2>
-            <a href="/courses/<%= course.slug %>" style="display: inline-block; margin-bottom: 20px; color: #666;">←
-                กลับไปหน้าคอร์ส</a>
+    <div class="auth-page">
+        <div class="loginform" style="width: 520px;">
+            <h1 style="font-size: 26px;">แก้ไขรายละเอียดคอร์ส</h1>
 
-            <div style="background: #f9f9f9; padding: 30px; border-radius: 8px;">
-                <form action="/teacher/edit-course/<%= course.id %>" method="POST" enctype="multipart/form-data">
+            <form action="/teacher/edit-course/<%= course.id %>" method="POST" enctype="multipart/form-data">
 
-                    <div class="form-group">
-                        <label><strong>ชื่อคอร์ส:</strong></label>
-                        <input type="text" name="title" value="<%= course.title %>" required
-                            style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 15px;">
+                <p>ชื่อคอร์ส</p>
+                <input type="text" name="title" value="<%= course.title %>" required>
+
+                <p>คำอธิบายคอร์ส</p>
+                <textarea name="description" rows="4" required
+                    style="width:100%; padding:10px 12px; border-radius:8px; border:none; outline:none;
+                           font-family:'Kodchasan',sans-serif; font-size:15px; color:#333;
+                           background:rgba(255,255,255,0.92); resize:vertical; box-sizing:border-box; margin-bottom:14px;"><%= course.description %></textarea>
+
+                <p>รูปปกคอร์ส <span style="font-size:13px; opacity:0.75;">(เว้นว่างถ้าไม่ต้องการเปลี่ยน)</span></p>
+                <% if (course.image) { %>
+                    <div style="margin-bottom:10px;">
+                        <img src="/uploads/<%= course.image %>" alt="รูปปัจจุบัน"
+                            style="max-width:180px; border-radius:8px; border:2px solid rgba(255,255,255,0.5);">
+                        <p style="font-size:12px; color:rgba(255,255,255,0.7); margin:4px 0;">รูปปัจจุบัน</p>
                     </div>
+                <% } %>
+                <label class="file-label" for="edit-image">
+                    📁 เลือกรูปภาพใหม่ <span id="edit-file-name">ยังไม่ได้เลือกไฟล์</span>
+                    <input type="file" id="edit-image" name="image" accept="image/*"
+                        onchange="document.getElementById('edit-file-name').textContent = this.files[0]?.name || 'ยังไม่ได้เลือกไฟล์'">
+                </label>
 
-                    <div class="form-group" style="margin-top: 16px;">
-                        <label><strong>คำอธิบายคอร์ส:</strong></label>
-                        <textarea name="description" rows="5" required
-                            style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 15px; resize: vertical;"><%= course.description %></textarea>
-                    </div>
+                <div class="submitbutton">
+                    <button type="submit">💾 บันทึกการแก้ไข</button>
+                </div>
+            </form>
 
-                    <div class="form-group" style="margin-top: 16px;">
-                        <label><strong>รูปปกคอร์ส (เว้นว่างถ้าไม่ต้องการเปลี่ยน):</strong></label>
-                        <% if (course.image) { %>
-                            <div style="margin: 10px 0;">
-                                <img src="/uploads/<%= course.image %>" alt="รูปปัจจุบัน"
-                                    style="max-width: 200px; border-radius: 6px; border: 1px solid #ddd;">
-                                <p style="font-size: 13px; color: #888; margin: 4px 0;">รูปปัจจุบัน</p>
-                            </div>
-                            <% } %>
-                                <input type="file" name="image" accept="image/*" style="margin-top: 6px;">
-                    </div>
-
-                    <div style="margin-top: 24px; display: flex; gap: 12px;">
-                        <button type="submit" class="btn btn-primary"
-                            style="padding: 10px 24px; background: #4a90d9; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-family: inherit;">
-                            💾 บันทึกการแก้ไข
-                        </button>
-                        <a href="/courses/<%= course.slug %>">
-                            <button type="button"
-                                style="padding: 10px 24px; background: #eee; color: #333; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-family: inherit;">
-                                ยกเลิก
-                            </button>
-                        </a>
-                    </div>
-
-                </form>
+            <div style="text-align:center; margin-top:14px;">
+                <a href="/courses/<%= course.slug %>" style="color:var(--bg); font-size:14px; opacity:0.85;">← กลับไปหน้าคอร์ส</a>
             </div>
         </div>
     </div>
 
 </body>
-
 </html>

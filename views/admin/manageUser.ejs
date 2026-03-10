@@ -4,13 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Lessons - i-Terial</title>
+    <title>Manage Users - i-Terial</title>
     <link rel="stylesheet" href="/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <style>
         .container {
             width: 900px;
@@ -19,140 +17,129 @@
             background: #e6dec6;
             border-radius: 20px;
         }
-
         .search-box {
             display: flex;
             justify-content: center;
             margin-bottom: 30px;
         }
-
         .search-box input {
             padding: 10px 15px;
             border-radius: 12px;
             border: 2px solid #444;
+            font-family: inherit;
         }
-
+        .search-box button {
+            padding: 10px 16px;
+            margin-left: 8px;
+            border-radius: 12px;
+            border: none;
+            background: #7f9c34;
+            color: white;
+            cursor: pointer;
+            font-family: inherit;
+        }
         .user-row {
             background: #ddd;
             padding: 16px 20px;
             margin: 14px 0;
             border-radius: 14px;
-
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-
+        .user-info { font-weight: bold; }
+        .user-role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-left: 8px;
+            background: #7f9c34;
+            color: white;
+        }
         .btn-group {
             display: flex;
             gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
         }
-
         .btn-group button {
             background: #7f9c34;
             color: white;
             border: none;
             padding: 8px 14px;
             border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
         }
-
-        .update {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .update-btn {
-            background: #7f9c34;
-            color: white;
-            border: none;
-            padding: 10px 18px;
+        .btn-group select {
+            padding: 7px 10px;
             border-radius: 10px;
+            border: 1px solid #aaa;
+            font-family: inherit;
         }
+        .delete-btn { background: #c0392b !important; }
     </style>
 </head>
 
 <body>
 
-        <div class="bigcontainer">
-        <div class="logo">
-            <h1>i-Terial</h1>
-        </div>
-        <div class="buttongroup">
-            <a href="/home"><button>Home</button></a>
-            <a href="/courses"><button>Search</button></a>
-            <% if (user) { %>
-                <a href="/profile"><button>Profile</button></a>
-                <% if (user.role==='teacher' || user.role==='admin' ) { %>
-                    <a href="/teacher/create-course"><button>Create Course</button></a>
-                    <% } %>
-                        <% } %>
-                            <% if (user && user.role==="admin" ) { %>
-                                <a href="/admin/manageUser"><button>Manage User</button></a>
-                                <% } else if (user && user.role==="teacher" ) { %>
-                                    <a href="/teacher/create-exam"><button>Create Exam</button></a>
-                                    <% } else { %>
-                                        <a href="/exam"><button>Exam</button></a>
-                                        <% } %>
-                                            <a href="/review"><button>Review</button></a>
-        </div>
-    </div>
+    <%- include('../partials/navbar-' + user.role, { user: user }) %>
 
     <div class="container">
 
-        <h2>Manage User</h2>
+        <h2>Manage Users</h2>
 
         <!-- Search -->
         <form action="/admin/searchUser" method="GET" class="search-box">
             <input type="text" name="keyword" placeholder="ค้นหาชื่อผู้ใช้">
+            <button type="submit">🔍 ค้นหา</button>
         </form>
 
-
         <!-- User List -->
-        <% if (users && users.length> 0) { %>
+        <% if (users && users.length > 0) { %>
 
-            <% users.forEach(user=> { %>
+            <% users.forEach(u => { %>
 
                 <div class="user-row">
 
-                    <div class="user-name">
-                        ผู้เรียน :
-                        <a>
-                            <%= user.username %>
-                        </a>
+                    <div class="user-info">
+                        <%= u.username %>
+                        <span class="user-role-badge"><%= u.role %></span>
+                        <span style="font-size:13px; color:#555; margin-left:8px;"><%= u.email %></span>
                     </div>
 
                     <div class="btn-group">
 
-                        <!-- แจ้งเตือน -->
-                        <button class="notify-btn">
-                            แจ้งเตือนเนื้อหาใหม่
-                        </button>
+                        <!-- Change Role -->
+                        <form action="/admin/changeRole/<%= u.id %>" method="POST" style="display:flex; gap:6px; align-items:center;">
+                            <select name="role">
+                                <option value="student" <%= u.role === 'student' ? 'selected' : '' %>>Student</option>
+                                <option value="teacher" <%= u.role === 'teacher' ? 'selected' : '' %>>Teacher</option>
+                            </select>
+                            <button type="submit">เปลี่ยน Role</button>
+                        </form>
 
                         <!-- Delete -->
-                        <form action="/admin/deleteUser/<%= user.id %>" method="POST">
-                            <button class="delete-btn">
-                                ลบผู้ใช้
-                            </button>
+                        <form action="/admin/deleteUser/<%= u.id %>" method="POST" style="display:inline;">
+                            <button class="delete-btn" onclick="return confirm('ลบผู้ใช้ <%= u.username %>?')">🗑 ลบ</button>
                         </form>
 
                     </div>
 
                 </div>
 
-                <% }) %>
+            <% }); %>
 
-                    <% } else { %>
+        <% } else { %>
 
-                        <p>No users found</p>
+            <p style="text-align:center; color:#888;">ไม่พบผู้ใช้</p>
 
-                        <% } %>
-
-
-                            <div class="update">
-                                <button class="update-btn">อัปเดต</button>
-                            </div>
+        <% } %>
 
     </div>
 
 </body>
+</html>

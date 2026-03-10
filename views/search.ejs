@@ -1,87 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
-    <title>IT-Rial</title>
+    <title>i-Terial - Search</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-    <!-- HEADER -->
+    <%- include('partials/navbar-' + (user ? user.role : 'guest'), { user: user || {} }) %>
 
-    <div class="header">
+    <div class="container">
+        <h1>ค้นหาคอร์ส</h1>
 
-        <div class="logo">i-Terial</div>
-
-        <div class="menu">
-            <a href="/">Home</a>
-            <a href="/search">Search</a>
-            <a href="#">Profile</a>
-            <a href="#">Exam</a>
-            <a href="#">Review</a>
-        </div>
-
-    </div>
-
-    <!-- SEARCH BOX -->
-
-    <div class="search-box">
-
-        <form action="/search" method="GET">
-
-            <input type="text" name="keyword" placeholder="กรุณากรอกชื่อรายวิชา" value="<%= keyword %>" class="search-input">
-
-            <button class="search-btn">🔍</button>
-
+        <form action="/search" method="GET" style="text-align:center; margin-bottom:30px;">
+            <input type="text" name="keyword" placeholder="กรุณากรอกชื่อรายวิชา" value="<%= keyword %>"
+                style="padding:10px 16px; border-radius:10px; border:2px solid #aaa; font-size:15px; font-family:inherit; width:300px;">
+            <button type="submit" style="padding:10px 18px; margin-left:8px; border-radius:10px; border:none; background:#7f9c34; color:white; font-size:15px; cursor:pointer;">🔍 ค้นหา</button>
         </form>
 
-    </div>
-
-    <!-- RESULT -->
-
-    <div class="result">
-
-        <% if(courses===null){ %>
-
+        <% if (courses === null) { %>
             <!-- ยังไม่ได้ค้นหา -->
-
-            <% } else if(courses.length===0){ %>
-
-                <div class="notfound">
-                    ไม่พบวิชาที่ค้นหา
-                </div>
-
-                <% } else { %>
-
-                    <div class="course-list">
-
-                        <% courses.forEach(course=> { %>
-
-                            <a href="/course/<%= encodeURIComponent(course.course_name) %>" class="course-link">
-
-                                <div class="course-card">
-
-                                    <img src="/images/<%= course.image %>">
-
-                                    <p>
-                                        <%= course.course_name %>
-                                    </p>
-
-                                </div>
-
-                            </a>
-
-                            <% }) %>
-
+        <% } else if (courses.length === 0) { %>
+            <p style="text-align:center; color:#888;">ไม่พบคอร์สที่ค้นหา</p>
+        <% } else { %>
+            <div class="course-grid">
+                <% courses.forEach(course => { %>
+                    <div class="course-card">
+                        <a href="/courses/<%= course.slug %>" style="text-decoration:none; color:inherit;">
+                            <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
+                            <div class="course-title"><%= course.title %></div>
+                        </a>
                     </div>
-
-                    <% } %>
-
+                <% }); %>
+            </div>
+        <% } %>
     </div>
 
 </body>
-
 </html>

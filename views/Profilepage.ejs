@@ -15,36 +15,7 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <div class="bigcontainer">
-        <div class="logo">
-            <h1>i-Terial</h1>
-        </div>
-        <div class="buttongroup">
-
-            <a href="/home">
-                <button class="highbut">Home</button>
-            </a>
-
-            <a href="/courses">
-                <button class="highbut">Search</button>
-            </a>
-
-            <a href="/profile">
-                <button class="highbut">Profile</button>
-            </a>
-
-            <a href="/exam">
-                <button class="highbut">Exam</button>
-            </a>
-
-            <a href="/review">
-                <button class="highbut">Review</button>
-            </a>
-
-        </div>
-
-    </div>
+    <%- include('partials/navbar-' + user.role, { user: user }) %>
 
 
     <!-- Profile Section -->
