@@ -3,68 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Lessons - i-Terial</title>
+    <title>จัดการบทเรียน - i-Terial</title>
     <link rel="stylesheet" href="/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kodchasan:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <style>
+        .manage-wrap {
+            max-width: 680px;
+            margin: 40px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        /* Add lesson card — login style */
+        .add-lesson-card {
+            background: var(--primary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px 40px;
+            color: var(--bg);
+        }
+        .add-lesson-card h2 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: var(--bg);
+        }
+        .add-lesson-card p {
+            color: var(--bg);
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .add-lesson-card input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: none;
+            outline: none;
+            font-family: "Kodchasan", sans-serif;
+            font-size: 15px;
+            background: rgba(255,255,255,0.92);
+            margin-bottom: 14px;
+            box-sizing: border-box;
+        }
+        .file-label {
+            display: block;
+            background: rgba(255,255,255,0.92);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 14px;
+        }
+        .file-label input[type="file"] { display: none; }
+        .file-label span { font-style: italic; color: #888; margin-left: 6px; }
+        /* Lesson list card */
+        .lesson-list-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 28px 32px;
+        }
+        .lesson-list-card h2 {
+            font-size: 18px;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+        .lesson-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+        .lesson-row h4 {
+            margin: 0 0 6px 0;
+            font-size: 15px;
+            color: var(--text);
+        }
+        .lesson-row .file-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .empty-lessons {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px 0;
+            font-size: 15px;
+        }
+    </style>
 </head>
 <body>
 
     <%- include('../partials/navbar-' + user.role, { user: user }) %>
 
-    <div class="lesson-container">
-        <h2>จัดการบทเรียน: <%= course.title %></h2>
-        <a href="/courses/<%= course.slug %>" class="btn btn-secondary" style="margin-bottom: 20px;">กลับไปหน้าคอร์ส</a>
+    <div class="manage-wrap">
 
-        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px;">
-            <h3>เพิ่มบทเรียนใหม่</h3>
+        <!-- Add lesson card -->
+        <div class="add-lesson-card">
+            <h2>เพิ่มบทเรียน</h2>
+            <p style="text-align:center; opacity:0.85; margin-bottom:20px; font-size:14px;"><%= course.title %></p>
+
             <form action="/teacher/add-lesson/<%= course.id %>" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label>ชื่อบทเรียน (Title):</label>
-                    <input type="text" name="title" required placeholder="เช่น บทที่ 1: แนะนำวิชา">
+                <p>ชื่อบทเรียน</p>
+                <input type="text" name="title" required placeholder="เช่น บทที่ 1: แนะนำวิชา">
+
+                <p>ไฟล์เอกสาร (PDF)</p>
+                <label class="file-label" for="pdf_file">
+                    📄 เลือกไฟล์ PDF <span id="pdf-name">ยังไม่ได้เลือกไฟล์</span>
+                    <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf"
+                        onchange="document.getElementById('pdf-name').textContent = this.files[0]?.name || 'ยังไม่ได้เลือกไฟล์'">
+                </label>
+
+                <p>ไฟล์วิดีโอ (Video)</p>
+                <label class="file-label" for="video_file">
+                    🎬 เลือกไฟล์วิดีโอ <span id="video-name">ยังไม่ได้เลือกไฟล์</span>
+                    <input type="file" id="video_file" name="video_file" accept="video/*"
+                        onchange="document.getElementById('video-name').textContent = this.files[0]?.name || 'ยังไม่ได้เลือกไฟล์'">
+                </label>
+
+                <div class="submitbutton">
+                    <button type="submit">บันทึกบทเรียน</button>
                 </div>
-                <div class="form-group">
-                    <label>ไฟล์เอกสาร (PDF):</label>
-                    <input type="file" name="pdf_file" accept="application/pdf">
-                </div>
-                <div class="form-group">
-                    <label>ไฟล์วิดีโอ (Video):</label>
-                    <input type="file" name="video_file" accept="video/*">
-                </div>
-                <button type="submit" class="btn btn-primary">บันทึกบทเรียน</button>
             </form>
+
+            <div style="text-align:center; margin-top:14px;">
+                <a href="/courses/<%= course.slug %>" style="color:var(--bg); font-size:14px; opacity:0.85;">← กลับไปหน้าคอร์ส</a>
+            </div>
         </div>
 
-        <div class="lesson-list">
-            <h3>บทเรียนทั้งหมด (<%= lessons.length %> บทเรียน)</h3>
+        <!-- Lesson list card -->
+        <div class="lesson-list-card">
+            <h2>บทเรียนทั้งหมด (<%= lessons.length %> บทเรียน)</h2>
+
             <% if (lessons.length === 0) { %>
-                <p style="color: #888;">ยังไม่มีบทเรียนในคอร์สนี้</p>
+                <div class="empty-lessons">📭 ยังไม่มีบทเรียนในคอร์สนี้</div>
             <% } else { %>
                 <% lessons.forEach((lesson, index) => { %>
-                    <div class="lesson-item" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div class="lesson-row">
                         <div>
-                            <h4 style="margin: 0 0 6px 0;"><%= index + 1 %>. <%= lesson.title %></h4>
-                            <div>
+                            <h4><%= index + 1 %>. <%= lesson.title %></h4>
+                            <div class="file-links">
                                 <% if (lesson.pdf_file) { %>
-                                    <a href="/uploads/<%= lesson.pdf_file %>" target="_blank" class="btn btn-secondary" style="font-size: 12px; margin-right: 5px;">📄 ดู PDF</a>
+                                    <a href="/uploads/<%= lesson.pdf_file %>" target="_blank" class="btn btn-secondary" style="font-size:12px;">📄 ดู PDF</a>
                                 <% } %>
                                 <% if (lesson.video_file) { %>
-                                    <a href="/uploads/<%= lesson.video_file %>" target="_blank" class="btn btn-secondary" style="font-size: 12px;">🎬 ดูวิดีโอ</a>
+                                    <a href="/uploads/<%= lesson.video_file %>" target="_blank" class="btn btn-secondary" style="font-size:12px;">🎬 ดูวิดีโอ</a>
                                 <% } %>
                                 <% if (!lesson.pdf_file && !lesson.video_file) { %>
-                                    <span style="font-size: 12px; color: #888;">(ไม่มีไฟล์แนบ)</span>
+                                    <span style="font-size:13px; color:var(--text-muted);">(ไม่มีไฟล์แนบ)</span>
                                 <% } %>
                             </div>
                         </div>
-                        <form action="/teacher/delete-lesson/<%= lesson.id %>" method="POST" style="display:inline;" onsubmit="return confirm('ลบบทเรียน <%= lesson.title %>?')">
+                        <form action="/teacher/delete-lesson/<%= lesson.id %>" method="POST"
+                            onsubmit="return confirm('ลบบทเรียน <%= lesson.title.replace(/'/g, "\\'") %>?')">
                             <input type="hidden" name="course_id" value="<%= course.id %>">
-                            <button type="submit" style="background:#c0392b;color:white;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit;">🗑 ลบ</button>
+                            <button type="submit" class="btn btn-danger" style="font-size:13px;">🗑 ลบ</button>
                         </form>
                     </div>
                 <% }); %>
             <% } %>
         </div>
+
     </div>
 
 </body>
