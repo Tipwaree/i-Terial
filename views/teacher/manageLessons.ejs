@@ -165,7 +165,8 @@
                             </div>
                         </div>
                         <form action="/teacher/delete-lesson/<%= lesson.id %>" method="POST"
-                            onsubmit="return confirm('ลบบทเรียน <%= lesson.title.replace(/'/g, "\\'") %>?')">
+                            data-title="<%= lesson.title %>"
+                            onsubmit="return confirm('ลบบทเรียน ' + this.dataset.title + '?')">
                             <input type="hidden" name="course_id" value="<%= course.id %>">
                             <button type="submit" class="btn btn-danger" style="font-size:13px;">🗑 ลบ</button>
                         </form>
