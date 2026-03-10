@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>i-Terial</title>
+</head>
+
+<body>
+
+    <div class="header">
+
+        <div class="logo">i-Terial</div>
+
+        <div class="menu">
+            <a href="/">Home</a>
+            <a href="/search">Search</a>
+            <a href="#">Profile</a>
+            <a href="#">Exam</a>
+            <a href="/review?course=<%= courseId %>&role=<%= role %>">Review</a>
+        </div>
+
+    </div>
+
+
+    <div class="review-container">
+
+        <h1>
+            <%= course.title %>
+        </h1>
+        <p>Teacher: <%= course.teacher %>
+        </p>
+
+        <div class="avg-rating">
+            ⭐ Average rating: <%= avgRating ? avgRating.toFixed(1) : "0.0" %>
+        </div>
+
+
+        <!-- STUDENT ADD REVIEW -->
+
+        <% if(role==="student" ){ %>
+
+            <form action="/review/<%= courseId %>?role=<%= role %>" method="POST" class="review-form">
+
+                <div class="star-rating">
+
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5">★</label>
+
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4">★</label>
+
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3">★</label>
+
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2">★</label>
+
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1">★</label>
+
+                </div>
+
+                <div class="review-input">
+
+                    <textarea name="comment" placeholder="Write your review..."></textarea>
+
+                    <br><br>
+
+                    <button type="submit">Send</button>
+
+                </div>
+
+            </form>
+
+            <% } %>
+
+
+                <!-- REVIEW LIST -->
+
+                <div class="review-list">
+
+                    <% if(reviews.length===0){ %>
+                        <p>No reviews yet</p>
+                        <% } %>
+
+
+                            <% reviews.forEach(r=> { %>
+
+                                <div class="review-card">
+
+                                    <div class="rating">
+
+                                        <% let rating=r.rating || 0 %>
+
+                                            <% for(let i=0;i<rating;i++){ %>
+                                                ★
+                                                <% } %>
+
+                                                    <% for(let i=rating;i<5;i++){ %>
+                                                        ☆
+                                                        <% } %>
+
+                                    </div>
+
+                                    <p>
+                                        <%= r.review_text %>
+                                    </p>
+
+
+                                    <!-- ADMIN DELETE -->
+
+                                    <% if(role==="admin" ){ %>
+
+                                        <form action="/review/delete/<%= r.id %>" method="POST">
+                                            <button class="delete-btn">Delete</button>
+                                        </form>
+
+                                        <% } %>
+
+                                </div>
+
+                                <% }) %>
+
+                </div>
+
+    </div>
+
+</body>
