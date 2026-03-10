@@ -298,10 +298,10 @@ h3{
 }
 
 .formedit form {
-    background: linear-gradient(135deg, #f5e6d3, #ffe8c2);
+    background-color: rgba(32, 161, 25, 0.8);
     padding: 40px;
     border-radius: 20px;
-    width: 350px;
+    width: 450px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
 }
 
@@ -312,7 +312,7 @@ h3{
 }
 
 .formedit h1 {
-    color: tomato;
+    color: aliceblue;
     font-size: 40px;
 }
 
