@@ -74,7 +74,7 @@
 
 <body>
 
-    <div class="bigcontainer">
+        <div class="bigcontainer">
         <div class="logo">
             <h1>i-Terial</h1>
         </div>
@@ -87,8 +87,14 @@
                     <a href="/teacher/create-course"><button>Create Course</button></a>
                     <% } %>
                         <% } %>
-                            <a href="/student"><button>Exam</button></a>
-                            <a href="/review"><button>Review</button></a>
+                            <% if (user && user.role==="admin" ) { %>
+                                <a href="/admin/manageUser"><button>Manage User</button></a>
+                                <% } else if (user && user.role==="teacher" ) { %>
+                                    <a href="/teacher/create-exam"><button>Create Exam</button></a>
+                                    <% } else { %>
+                                        <a href="/exam"><button>Exam</button></a>
+                                        <% } %>
+                                            <a href="/review"><button>Review</button></a>
         </div>
     </div>
 

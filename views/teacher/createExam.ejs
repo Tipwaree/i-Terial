@@ -140,7 +140,11 @@
                             <div class="question-header">
                                 <h4>คำถามข้อที่ <%= index+1 %>
                                 </h4>
-                                <button type="button" class="delete-btn" onclick="deleteQuestion(this)">ลบ</button>
+                                <form action="/teacher/delete-question/<%= q.id %>" method="POST"
+                                    style="display:inline;">
+                                    <input type="hidden" name="subject_id" value="<%= subject_id %>">
+                                    <button type="submit" class="delete-btn">ลบ</button>
+                                </form>
                             </div>
 
                             <input name="question[]" value="<%= q.question %>" placeholder="คำถาม">

@@ -322,23 +322,101 @@ app.post("/forgot", (req, res) => {
 
 //─── EXAM & STUDENT PAGES ───────────────────────────────────────
 
+//student exam page
 app.get("/exam", (req, res) => {
-  // เพิ่ม mockExams เพื่อแก้บั๊ก exams is not defined
-  const subjects = [
+
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const exams = [
     { id: 1, name: "TGAT1" },
     { id: 2, name: "TGAT2" },
     { id: 3, name: "TPAT3" },
     { id: 4, name: "A-level คณิต 1" },
     { id: 5, name: "A-level อังกฤษ" }
   ];
-  res.render("student/examList", { subjects: subjects, user: req.session.user });
+
+  res.render("student/examList", {
+    exams: exams,
+    user: req.session.user
+  });
+
 });
 
 app.get("/student/result", (req, res) => {
   res.render("student/result", { user: req.session.user });
 });
 
+//exam from teacher
+app.get("/student/exam/:id", (req, res) => {
+
+  if (!req.session.user) {
+    return res.redirect("/login")
+  }
+
+  const subject_id = req.params.id
+
+  examDb.all(
+    "SELECT * FROM questions WHERE subject_id=?",
+    [subject_id],
+    (err, rows) => {
+
+      res.render("student/examPage", {
+        questions: rows,
+        user: req.session.user,
+        answers: null
+      })
+
+    }
+  )
+
+})
+
+app.post("/student/submit", (req, res) => {
+
+  const subject_id = req.body.subject_id
+  const answers = req.body
+
+  let score = 0
+  let total = 0
+
+  examDb.all(
+    "SELECT * FROM questions WHERE subject_id=?",
+    [subject_id],
+    (err, rows) => {
+
+      rows.forEach(q => {
+
+        total++
+
+        const studentAnswer = answers["q" + q.id]
+
+        if (parseInt(studentAnswer) === q.answer) {
+          score++
+        }
+
+      })
+
+      res.render("student/result", {
+        user: req.session.user,
+        score: score,
+        total: total,
+        subject_id: subject_id
+      })
+
+    }
+  )
+
+})
+
 // teacher exam page
+// exam database
+const examDb = new sqlite3.Database("exam.db", (err) => {
+  if (err) console.error(err.message)
+  console.log("Connected to exam database")
+});
+
 app.get("/teacher/exams", (req, res) => {
 
   if (!req.session.user || req.session.user.role !== "teacher") {
@@ -362,20 +440,98 @@ app.get("/teacher/exams", (req, res) => {
 
 app.get("/teacher/create-exam/:id", (req, res) => {
 
-  if (!req.session.user || req.session.user.role !== "teacher")
+  if (!req.session.user || req.session.user.role !== "teacher") {
     return res.redirect("/login");
+  }
 
   const subject_id = req.params.id;
 
-  res.render("teacher/createExam", {
-    user: req.session.user,
-    exam: null,
-    subject_id: subject_id,
-    questions: []
-  });
+  const subjects = {
+    1: "TGAT1",
+    2: "TGAT2",
+    3: "TPAT3",
+    4: "A-level คณิต 1",
+    5: "A-level อังกฤษ"
+  };
+
+  examDb.all(
+    "SELECT * FROM questions WHERE subject_id=?",
+    [subject_id],
+    (err, rows) => {
+
+      if (err) {
+        console.log(err);
+        return res.send("Database error");
+      }
+
+      res.render("teacher/createExam", {
+        user: req.session.user,
+        exam: { id: subject_id, name: subjects[subject_id] },
+        subject_id: subject_id,
+        questions: rows
+      });
+
+    }
+  );
 
 });
 
+app.post("/teacher/saveExam", (req, res) => {
+
+  const subject_id = req.body.subject_id
+  const questions = req.body.question
+  const c1 = req.body.choice1
+  const c2 = req.body.choice2
+  const c3 = req.body.choice3
+  const c4 = req.body.choice4
+  const answers = req.body.answer
+
+  examDb.serialize(() => {
+
+    for (let i = 0; i < questions.length; i++) {
+
+      examDb.run(
+        `INSERT INTO questions
+        (question,choice1,choice2,choice3,choice4,answer,subject_id)
+        VALUES (?,?,?,?,?,?,?)`,
+        [
+          questions[i],
+          c1[i],
+          c2[i],
+          c3[i],
+          c4[i],
+          answers[i],
+          subject_id
+        ]
+      )
+
+    }
+
+  })
+
+  res.redirect("/teacher/create-exam/" + subject_id + "?saved=1")
+
+})
+
+app.post("/teacher/delete-question/:id", (req, res) => {
+
+  const question_id = req.params.id
+  const subject_id = req.body.subject_id
+
+  examDb.run(
+    "DELETE FROM questions WHERE id=?",
+    [question_id],
+    (err) => {
+      if (err) {
+        console.log(err)
+        return res.send("delete error")
+      }
+
+      res.redirect("/teacher/create-exam/" + subject_id)
+    }
+  )
+
+})
 
 // ─── TEACHER PAGES (CREATE COURSE) ────────────────────────────────
 
