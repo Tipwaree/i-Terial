@@ -31,7 +31,7 @@
                         </form>
                     <% } %>
                     <!-- course link -->
-                    <a href="/courses/<%= course.slug %>" style="text-decoration:none; color:inherit;">
+                    <a href="/courses/<%= course.slug %>" style="text-decoration:none; color:inherit; display:block;">
                         <% if (course.image) { %>
                         <img src="/uploads/<%= course.image %>" alt="<%= course.title %>">
                         <% } else { %>
