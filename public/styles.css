@@ -174,11 +174,17 @@ button:hover {
 }
 
 /* ===== LOGIN / REGISTER PAGE ===== */
-.biggest {
+.biggest, .auth-page {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 70px);
+}
+
+.manage-wrap {
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 0 16px;
 }
 
 .loginform {
